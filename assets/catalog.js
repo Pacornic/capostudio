@@ -40,10 +40,10 @@
     function showDetail(idx) {
       var g = games[idx], cov = window.COVER(g.c);
       var stats = '<div class="py-stats">' +
-        '<div class="py-stat"><div class="k">Jugadores</div><div class="v">' + esc(g.pl) + '</div></div>' +
-        '<div class="py-stat"><div class="k">Duración</div><div class="v">' + esc(g.t) + '</div></div>' +
-        '<div class="py-stat"><div class="k">Edad</div><div class="v">' + esc(g.ag) + '</div></div>' +
-        (g.cat === 'pub' ? '<div class="py-stat"><div class="k">Año</div><div class="v">' + esc(g.y) + '</div></div>' : '') +
+        '<div class="py-stat"><div class="k">Players</div><div class="v">' + esc(g.pl) + '</div></div>' +
+        '<div class="py-stat"><div class="k">Duration</div><div class="v">' + esc(g.t) + '</div></div>' +
+        '<div class="py-stat"><div class="k">Age</div><div class="v">' + esc(g.ag) + '</div></div>' +
+        (g.cat === 'pub' ? '<div class="py-stat"><div class="k">Year</div><div class="v">' + esc(g.y) + '</div></div>' : '') +
         '</div>';
       var coverHTML = cov
         ? '<img class="py-dcover" src="' + cov + '" alt="' + esc(g.n) + '">'
@@ -55,8 +55,8 @@
 
       var mechs = (window.MECH && window.MECH[g.i]) || [];
       var mechHTML = mechs.length
-        ? '<div class="py-mechs-t">Mecánicas</div><div class="py-stats py-mechrow">' +
-          mechs.map(function (m) { return '<div class="py-stat py-mechbox">' + esc(m) + '</div>'; }).join('') + '</div>'
+        ? '<div class="py-mechs-t">Mechanics</div><div class="py-mechrow">' +
+          mechs.map(function (m) { return '<span class="py-mech">' + esc(m) + '</span>'; }).join('') + '</div>'
         : '';
 
       var pubs = (window.PUB && window.PUB[g.i]) || [];

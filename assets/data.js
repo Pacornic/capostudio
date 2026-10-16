@@ -41,23 +41,23 @@ window.GAMES = [
 
 /* Mecánicas por juego (traídas de BGG). Clave = id del juego. Edita libremente. */
 window.MECH = {
-  "131241": ["Mayorías de área", "Subasta / Pujas", "Selección simultánea de acciones", "Colocación de trabajadores"],
-  "203002": ["Memoria", "Tentar la suerte", "Colección de sets"],
-  "228101": ["Gestión de la mano", "Draft abierto", "Colección de sets"],
-  "256621": ["Mayorías de área", "Gestión de la mano", "Recoger y entregar", "Fastidiar al rival"],
-  "293777": ["Colección de sets"],
-  "277109": ["Mayorías de área", "Colocación de trabajadores"],
-  "298147": ["Gestión de la mano", "Tentar la suerte", "Fastidiar al rival"],
-  "239031": ["Mayorías de área", "Tentar la suerte", "Colección de sets", "Fastidiar al rival"],
-  "355205": ["Gestión de la mano", "Draft abierto", "Colección de sets"],
-  "378958": ["Memoria", "Fastidiar al rival"],
-  "368352": ["Draft abierto", "Juego en solitario", "Colocación de trabajadores (distintos tipos)"],
-  "402674": ["Gestión de la mano", "Tentar la suerte", "Fastidiar al rival"],
-  "434143": ["Tentar la suerte", "Colección de sets"],
-  "455368": ["Mercado", "Negociación", "Colección de sets"],
-  "309416": ["Cobertura de cuadrícula", "Tentar la suerte", "Colocación de losetas"],
-  "428723": ["Mayorías de área", "Apuestas y faroleo", "Gestión de la mano", "Colección de sets"],
-  "480738": ["Recuperación de acciones", "Construcción de mazo/bolsa", "Bonus de final de partida", "Cobertura de cuadrícula", "Gestión de la mano", "Construcción de patrones", "Movimiento punto a punto"]
+  "131241": ["Area Majority / Influence", "Auction / Bidding", "Simultaneous Action Selection", "Worker Placement"],
+  "203002": ["Memory", "Push Your Luck", "Set Collection"],
+  "228101": ["Hand Management", "Open Drafting", "Set Collection"],
+  "256621": ["Area Majority / Influence", "Hand Management", "Pick-up and Deliver", "Take That"],
+  "293777": ["Set Collection"],
+  "277109": ["Area Majority / Influence", "Worker Placement"],
+  "298147": ["Hand Management", "Push Your Luck", "Take That"],
+  "239031": ["Area Majority / Influence", "Push Your Luck", "Set Collection", "Take That"],
+  "355205": ["Hand Management", "Open Drafting", "Set Collection"],
+  "378958": ["Memory", "Take That"],
+  "368352": ["Open Drafting", "Solo / Solitaire Game", "Worker Placement, Different Worker Types"],
+  "402674": ["Hand Management", "Push Your Luck", "Take That"],
+  "434143": ["Push Your Luck", "Set Collection"],
+  "455368": ["Market", "Negotiation", "Set Collection"],
+  "309416": ["Grid Coverage", "Push Your Luck", "Tile Placement"],
+  "428723": ["Area Majority / Influence", "Betting and Bluffing", "Hand Management", "Set Collection"],
+  "480738": ["Action Retrieval", "Deck, Bag, and Pool Building", "End Game Bonuses", "Grid Coverage", "Hand Management", "Pattern Building", "Point to Point Movement"]
 };
 
 /* Editoriales por juego (traídas de BGG). Clave = id del juego. */

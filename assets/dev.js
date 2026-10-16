@@ -1,8 +1,6 @@
-/* Motor de la pestaña "En desarrollo": catálogo de prototipos jugables (estilo hub).
-   Cada prototipo = una entrada en PROTOS (ver assets/data.js). Tarjeta con
-   miniatura, tipo, título, subtítulo, descripción, chips (jugadores / tiempo /
-   mecánicas) y botones "Jugar" (abre el juego en su URL) y "Reglamento" (si existe).
-   Todos los campos salvo name y path son opcionales: si faltan, no se pintan. */
+/* Motor de la pestaña "Prototypes": mismo formato que el catálogo (parrilla + ficha).
+   Al hacer clic en un prototipo se abre su ficha con datos, mecánicas (sus tags) y
+   los botones "Jugar" (abre el juego en su URL) y "Reglamento" (si existe). */
 (function () {
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
@@ -10,42 +8,70 @@
     var mount = document.querySelector(opts.mount);
     var protos = window.PROTOS || [];
 
+    mount.innerHTML =
+      '<div class="py-view" id="list"><div class="py-grid" id="grid"></div></div>' +
+      '<div class="py-view py-detail" id="detail"></div>';
+    var listV = mount.querySelector('#list');
+    var detV = mount.querySelector('#detail');
+    var grid = mount.querySelector('#grid');
+
     if (!protos.length) {
-      mount.innerHTML = '<div class="py-empty">Aún no hay prototipos publicados. Añade el primero copiando su HTML en la carpeta <code>/dev/</code> y registrándolo en <code>assets/data.js</code>.</div>';
+      grid.outerHTML = '<div class="py-empty">Aún no hay prototipos. Añade uno en <code>/dev/</code> y regístralo en <code>assets/data.js</code>.</div>';
       return;
     }
 
-    mount.innerHTML = protos.map(function (p) {
-      // Miniatura: imagen (thumb) o emoji sobre color de fondo
-      var art;
-      if (p.thumb) {
-        art = '<div class="py-art" style="background-image:url(\'' + esc(p.thumb) + '\')"></div>';
-      } else {
-        var bg = p.color ? esc(p.color) : '#1f2e3f';
-        art = '<div class="py-art" style="background:' + bg + '"><span class="py-art-emoji">' + esc(p.emoji || '🎲') + '</span></div>';
-      }
+    function thumb(p) {
+      if (p.thumb) return '<div class="py-thumb" style="background-image:url(\'' + esc(p.thumb) + '\')"></div>';
+      return '<div class="py-thumb py-thumb-emoji" style="background:' + (p.color ? esc(p.color) : '#1f2e3f') + '">' + esc(p.emoji || '🎲') + '</div>';
+    }
+    function cover(p) {
+      if (p.thumb) return '<img class="py-dcover" src="' + esc(p.thumb) + '" alt="' + esc(p.name) + '">';
+      return '<div class="py-dcover py-dcover-emoji" style="background:' + (p.color ? esc(p.color) : '#1f2e3f') + '">' + esc(p.emoji || '🎲') + '</div>';
+    }
 
-      var chips = [];
-      if (p.players) chips.push('<span class="py-chip">👥 ' + esc(p.players) + '</span>');
-      if (p.time) chips.push('<span class="py-chip">⏱ ' + esc(p.time) + '</span>');
-      (p.tags || []).forEach(function (t) { chips.push('<span class="py-chip tag">' + esc(t) + '</span>'); });
-      var chipsHTML = chips.length ? '<div class="py-tags">' + chips.join('') + '</div>' : '';
+    grid.innerHTML = protos.map(function (p, idx) {
+      return '<div class="py-card" data-idx="' + idx + '">' + thumb(p) +
+        '<div class="py-cbody"><div class="py-cname">' + esc(p.name) + '</div>' +
+        (p.type ? '<div class="py-cyear">' + esc(p.type) + '</div>' : '') + '</div></div>';
+    }).join('');
+
+    grid.querySelectorAll('.py-card').forEach(function (el) {
+      el.addEventListener('click', function () { showDetail(+el.getAttribute('data-idx')); });
+    });
+
+    function showDetail(idx) {
+      var p = protos[idx];
+      var sarr = [];
+      if (p.players) sarr.push('<div class="py-stat"><div class="k">Players</div><div class="v">' + esc(String(p.players).replace(/\s*(jugadores?|players?)/i, '')) + '</div></div>');
+      if (p.time) sarr.push('<div class="py-stat"><div class="k">Duration</div><div class="v">' + esc(p.time) + '</div></div>');
+      var stats = sarr.length ? '<div class="py-stats">' + sarr.join('') + '</div>' : '';
+
+      var tags = p.tags || [];
+      var mechHTML = tags.length
+        ? '<div class="py-mechs-t">Mechanics</div><div class="py-mechrow">' +
+          tags.map(function (m) { return '<span class="py-mech">' + esc(m) + '</span>'; }).join('') + '</div>'
+        : '';
 
       var btns = '';
       if (p.path) btns += '<a class="py-btn primary" href="' + esc(p.path) + '" target="_blank" rel="noopener">&#9654; Jugar</a>';
       if (p.rulebook) btns += '<a class="py-btn" href="' + esc(p.rulebook) + '" target="_blank" rel="noopener">📖 Reglamento</a>';
 
-      return '<article class="py-proto">' +
-        art +
-        '<div class="py-body">' +
-          (p.type ? '<div class="py-ptype">' + esc(p.type) + '</div>' : '') +
-          '<h3>' + esc(p.name) + (p.subtitle ? ' <span class="py-sub">— ' + esc(p.subtitle) + '</span>' : '') + '</h3>' +
-          (p.desc ? '<p class="pdesc">' + esc(p.desc) + '</p>' : '') +
-          chipsHTML +
-          (btns ? '<div class="py-actions">' + btns + '</div>' : '') +
-          (p.updated ? '<div class="py-upd">Actualizado: ' + esc(p.updated) + '</div>' : '') +
-        '</div>' +
-      '</article>';
-    }).join('');
+      detV.innerHTML = '<button class="py-back">&larr; Volver</button>' +
+        '<div class="py-dhead">' + cover(p) +
+        '<div class="py-dinfo"><h2>' + esc(p.name) + '</h2>' +
+        (p.type ? '<div class="py-dyear">' + esc(p.type) + '</div>' : '') + stats + mechHTML +
+        '</div></div>' +
+        '<div class="py-dbody">' +
+        (p.desc ? '<p class="py-ddesc">' + esc(p.desc) + '</p>' : '') +
+        (btns ? '<div class="py-actions">' + btns + '</div>' : '') +
+        '</div>';
+
+      detV.querySelector('.py-back').addEventListener('click', showList);
+      listV.style.display = 'none';
+      detV.style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showList() { detV.style.display = 'none'; listV.style.display = 'block'; }
   };
 })();

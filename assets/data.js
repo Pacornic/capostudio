@@ -42,10 +42,10 @@ window.GAMES = [
    ============================================================ */
 window.PROTOS = [
   {
-    name: "Prototipo de ejemplo",
-    path: "dev/ejemplo/index.html",
-    desc: "Ejemplo para enseñar cómo se incrusta y se comparte un prototipo jugable. Sustitúyelo por el tuyo.",
-    updated: "2026-10-16",
-    code: "" // deja "" sin código; pon p.ej. "setsuna2026" para pedir código al abrir
+    name: "The Wild Call",
+    path: "dev/The Wild Call/the-wild-call.html",
+    // desc: "Prototipo jugable en desarrollo.",
+    // updated: "2026-10-16",
+    code: "5555" // deja "" sin código; pon p.ej. "clave123" para pedir código al abrir
   }
 ];

@@ -35,47 +35,50 @@ window.GAMES = [
   {i:"434143",n:"Bango",y:"2025",cat:"pub",pl:"2-5",t:"15 min",ag:"8+",d:"Tienta a la suerte para completar tus secuencias en este juego de cartas fácil de aprender.",c:"95B8FnXyFT0Z1098gpPZyQ~bTzwT5OuYSUAkJyqBEud1tv8WAA~pic8648421.png",p:["1SRcQI_zWLZVOF6E5zgHwA~pzsml6OM2IjXytiAO-HYDmgtXYA~pic8648425.png","HXEWqM2xFiAXRiuAiGfjqw~KDYaXmkeVWF4orwjGm7qMtT90y8~pic8648424.png","RZGyl7MCKI9dul8nrZHJtA~9kRivq7HHDDcRMhy0OkQK61bp4A~pic8648423.png","Hjka7Etbi1fQI5Puj9iDrg~B-421MMjU0k512UqdyJ2iw0FbBM~pic8648422.png","95B8FnXyFT0Z1098gpPZyQ~IiaESc1DGnXQxqWX9204juFqtDw~pic8648421.png"]},
   {i:"455368",n:"Salem",y:"2025",cat:"pub",pl:"2-4",t:"20-30 min",ag:"10+",d:"Compite como mercader alquimista en el mercado más mágico.",c:"_7MRtkx2yDOLaeieXA-cBQ~1hxJvYPb951Xh3fQqBWcq2syaKM~pic9136990.jpg",p:["_7MRtkx2yDOLaeieXA-cBQ~khzZfGY9mbbsAgS5Byw06L4IFIk~pic9136990.jpg","bTVYS8kYNEl_tEh86ByY2w~aU5jDQFvkBgS41TlzeN-_Tu-Liw~pic9136986.jpg","WQCJ34paPtSEzGrKCaEp8g~J8jI1MLtUAq-z5GEbdnn78XO274~pic9136985.jpg","Wzr3p2xylAAyFzXrNXhN1g~SwIh8afW7qq_wuWV7hyfBbU8JOo~pic9136984.jpg"]},
   {i:"309416",n:"Akihabara",y:"Próximamente",cat:"soon",pl:"2-4",t:"15-20 min",ag:"7+",d:"Transforma la vieja Ciudad Eléctrica de Tokio en el vibrante Akihabara.",c:null,p:[]},
-  {i:"428723",n:"Banzai",y:"Próximamente",cat:"soon",pl:"2-5",t:"20-30 min",ag:"8+",d:"Prepárate para desafiar a los demás clanes de la ciudad.",c:null,p:[]}
+  {i:"428723",n:"Banzai",y:"Próximamente",cat:"soon",pl:"2-5",t:"20-30 min",ag:"8+",d:"Prepárate para desafiar a los demás clanes de la ciudad.",c:null,p:[]},
+  {i:"480738",n:"Belladonna",y:"Próximamente",cat:"soon",pl:"1-4",t:"60-120 min",ag:"14+",d:"Invita, sienta y envenena a los nobles en el siniestro banquete de Catalina de Médici.",c:"https://cf.geekdo-images.com/-C63ybOBUfekReBvZFxKuA__itemrep/img/vb6niORyC50W8RudugvaWD34FyA=/fit-in/246x300/filters:strip_icc()/pic9865362.png",p:["https://cf.geekdo-images.com/RjJxGHqLvg8bT2QTaUcyig__large/img/X6ozHATijT319x1I28gjFYsLmYA=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic9865476.png","https://cf.geekdo-images.com/-C63ybOBUfekReBvZFxKuA__large/img/izErc8FM9jU11XvwNtqrzCx-coY=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic9865362.png"]}
 ];
 
-/* Mecánicas por juego (traídas de BGG). Clave = id del juego. */
+/* Mecánicas por juego (traídas de BGG). Clave = id del juego. Edita libremente. */
 window.MECH = {
-  "131241": ["Mayorías de área","Subasta / Pujas","Selección simultánea de acciones","Colocación de trabajadores"],
-  "203002": ["Memoria","Tentar la suerte","Colección de sets"],
-  "228101": ["Gestión de la mano","Draft abierto","Colección de sets"],
-  "239031": ["Mayorías de área","Tentar la suerte","Colección de sets","Fastidiar al rival"],
-  "256621": ["Mayorías de área","Gestión de la mano","Recoger y entregar","Fastidiar al rival"],
-  "277109": ["Mayorías de área","Colocación de trabajadores"],
+  "131241": ["Mayorías de área", "Subasta / Pujas", "Selección simultánea de acciones", "Colocación de trabajadores"],
+  "203002": ["Memoria", "Tentar la suerte", "Colección de sets"],
+  "228101": ["Gestión de la mano", "Draft abierto", "Colección de sets"],
+  "256621": ["Mayorías de área", "Gestión de la mano", "Recoger y entregar", "Fastidiar al rival"],
   "293777": ["Colección de sets"],
-  "298147": ["Gestión de la mano","Tentar la suerte","Fastidiar al rival"],
-  "309416": ["Cobertura de cuadrícula","Tentar la suerte","Colocación de losetas"],
-  "355205": ["Gestión de la mano","Draft abierto","Colección de sets"],
-  "368352": ["Draft abierto","Juego en solitario","Colocación de trabajadores (distintos tipos)"],
-  "378958": ["Memoria","Fastidiar al rival"],
-  "402674": ["Gestión de la mano","Tentar la suerte","Fastidiar al rival"],
-  "428723": ["Mayorías de área","Apuestas y faroleo","Gestión de la mano","Colección de sets"],
-  "434143": ["Tentar la suerte","Colección de sets"],
-  "455368": ["Mercado","Negociación","Colección de sets"]
+  "277109": ["Mayorías de área", "Colocación de trabajadores"],
+  "298147": ["Gestión de la mano", "Tentar la suerte", "Fastidiar al rival"],
+  "239031": ["Mayorías de área", "Tentar la suerte", "Colección de sets", "Fastidiar al rival"],
+  "355205": ["Gestión de la mano", "Draft abierto", "Colección de sets"],
+  "378958": ["Memoria", "Fastidiar al rival"],
+  "368352": ["Draft abierto", "Juego en solitario", "Colocación de trabajadores (distintos tipos)"],
+  "402674": ["Gestión de la mano", "Tentar la suerte", "Fastidiar al rival"],
+  "434143": ["Tentar la suerte", "Colección de sets"],
+  "455368": ["Mercado", "Negociación", "Colección de sets"],
+  "309416": ["Cobertura de cuadrícula", "Tentar la suerte", "Colocación de losetas"],
+  "428723": ["Mayorías de área", "Apuestas y faroleo", "Gestión de la mano", "Colección de sets"],
+  "480738": ["Recuperación de acciones", "Construcción de mazo/bolsa", "Bonus de final de partida", "Cobertura de cuadrícula", "Gestión de la mano", "Construcción de patrones", "Movimiento punto a punto"]
 };
 
 /* Editoriales por juego (traídas de BGG). Clave = id del juego. */
 window.PUB = {
   "131241": ["ABBA Games"],
   "203002": ["Zacatrus"],
-  "228101": ["Evrikus","Ludopolis","Zacatrus"],
-  "239031": ["TCG Factory"],
+  "228101": ["Evrikus", "Ludopolis", "Zacatrus"],
   "256621": ["Zacatrus"],
-  "277109": ["Last Level","Taverna Ludica Games"],
   "293777": ["ABBA Games"],
+  "277109": ["Last Level", "Taverna Ludica Games"],
   "298147": ["Zoch Verlag"],
-  "309416": ["TCG Factory"],
+  "239031": ["TCG Factory"],
   "355205": ["Zacatrus"],
-  "368352": ["Giant Roc","Lifestyle Boardgames Ltd","Perro Loko Games"],
   "378958": ["Zoch Verlag"],
-  "402674": ["Devir","999 Games","GaGa Games"],
+  "368352": ["Giant Roc", "Lifestyle Boardgames Ltd", "Perro Loko Games"],
+  "402674": ["Devir", "999 Games", "GaGa Games"],
+  "434143": ["Funnyfox", "AllGo-Games", "Gémklub", "Hachette Boardgames Benelux"],
+  "455368": ["Last Level"],
+  "309416": ["TCG Factory"],
   "428723": ["En búsqueda de editorial"],
-  "434143": ["Funnyfox","AllGo-Games","Gémklub","Hachette Boardgames Benelux"],
-  "455368": ["Last Level"]
+  "480738": ["Perro Loko Games"]
 };
 
 /* ============================================================

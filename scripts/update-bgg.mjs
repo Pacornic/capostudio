@@ -79,10 +79,26 @@ async function fetchThing(id) {
   };
 }
 
-const classify = (year) => (year > 0 && year <= YEAR_NOW) ? 'pub' : 'soon';
+/* Regla: año futuro (p. ej. el que viene) -> Próximamente; año pasado/actual -> Publicados;
+   sin fecha (año 0) -> null = no se muestra (es un borrador sin anunciar). */
+function classify(year) {
+  if (year > YEAR_NOW) return 'soon';
+  if (year > 0) return 'pub';
+  return null;
+}
 const fmtPlayers = (d) => (d.minp && d.maxp) ? (d.minp === d.maxp ? d.minp : d.minp + '-' + d.maxp) : '';
 const fmtTime = (d) => (d.minpt && d.maxpt && d.minpt !== d.maxpt) ? (d.minpt + '-' + d.maxpt + ' min') : (d.time ? d.time + ' min' : '');
 const transMech = (arr) => arr.map(m => MECH_ES[m] || m);
+
+/* IDs añadidos a mano (scripts/extra-ids.json). Para traer un juego nuevo con el
+   botón: añade su id de BGG a ese archivo y ejecuta el workflow. El botón rellena
+   el resto (nombre, año, jugadores, mecánicas, editorial, portada) y lo clasifica. */
+function readExtraIds() {
+  try {
+    const arr = JSON.parse(fs.readFileSync(path.resolve('scripts/extra-ids.json'), 'utf8'));
+    return Array.isArray(arr) ? arr.map(String) : [];
+  } catch (e) { return []; }
+}
 
 async function discoverIds() {
   const url = 'https://api.geekdo.com/api/geekitem/linkeditems?ajax=1&linkdatatype=boardgame&nosession=1' +
@@ -132,7 +148,9 @@ async function main() {
 
   const existingIds = new Set(games.map(g => g.i));
   const discovered = await discoverIds();
-  const allIds = Array.from(new Set([...games.map(g => g.i), ...discovered])).filter(id => !IGNORE.has(id));
+  const extra = readExtraIds();
+  if (extra.length) console.log('IDs añadidos a mano (extra-ids.json): ' + extra.join(', '));
+  const allIds = Array.from(new Set([...games.map(g => g.i), ...discovered, ...extra])).filter(id => !IGNORE.has(id));
 
   // Traer datos de BGG
   const data = {};
@@ -145,10 +163,11 @@ async function main() {
   // Actualizar existentes (solo clasificación; conservar lo curado)
   for (const g of games) {
     const d = data[g.i];
-    if (!d || !d.year) continue;
-    g.cat = classify(d.year);
-    g.y = g.cat === 'pub' ? String(d.year) : (g.y && g.y !== '' ? g.y : 'Próximamente');
-    if (g.cat === 'soon') g.y = 'Próximamente';
+    if (!d) continue;
+    const cls = classify(d.year);
+    if (!cls) continue; // sin fecha: conservar lo que ya tenía
+    g.cat = cls;
+    g.y = cls === 'pub' ? String(d.year) : 'Próximamente';
   }
 
   // Añadir nuevos
@@ -158,6 +177,7 @@ async function main() {
     const d = data[id];
     if (!d) continue;
     const cat = classify(d.year);
+    if (!cat) continue; // sin fecha: no añadir borradores
     games.push({
       i: id, n: d.name, y: cat === 'pub' ? String(d.year) : 'Próximamente', cat,
       pl: fmtPlayers(d), t: fmtTime(d), ag: d.age ? d.age + '+' : '', d: d.desc, c: d.image || null, p: []

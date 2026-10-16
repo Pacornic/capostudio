@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KURA · Mahjong Nueva 10</title>
+<title>Niwa</title>
 <style>
   :root{
     --bg:#141A26; --panel:#1D2533; --border:#2C3850; --ink:#E8E2D2;
@@ -627,7 +627,7 @@ let S={screen:"setup",playerConfigs:[
 
 function startGame(){
   const np=S.playerConfigs.length;
-  S={screen:"play",playerConfigs:S.playerConfigs,mayRate:S.mayRate||"1y0",tokMode:S.tokMode||"on",noHoles:S.noHoles!==false,
+  S={screen:"play",playerConfigs:S.playerConfigs,mayRate:"1y0",tokMode:"off",noHoles:true,
     deck:makeDeck(np),display:[],players:[],
     claimed:[0,0,0],passed:false,passStreak:0,
     endTriggered:false,endJust:false,endBy:null,endRounds:null,inFinalRound:false,
@@ -887,7 +887,7 @@ function boardHtml(p,highlight,height,tent){
       <div class="boardscale" style="position:absolute;width:${bw}px;height:${bh}px">
         <div style="position:absolute;left:${pad-minX}px;top:${pad-minY}px">${cellsH}</div></div></div></div>`;
 }
-function playerTokensHtml(playerIdx){
+function playerTokensHtml(playerIdx){return "";
   const owned=CIDS.filter(c=>S.colorTokens[c]&&S.colorTokens[c].owner===playerIdx);
   if(!owned.length)return"";
   return`<span style="display:inline-flex;gap:2px;vertical-align:middle;margin-left:3px">${owned.map(c=>ornamentSvg(c,13)).join("")}</span>`;
@@ -929,19 +929,7 @@ function render(){
   if(S.screen==="setup"){
     app.innerHTML=`
       <div style="max-width:640px;margin:0 auto;padding-top:44px">
-        <h1 style="font-size:32px">KURA <span style="color:var(--gold)">·</span> Mahjong Nueva 10 <span style="font-size:14px;color:var(--muted)">cada farol puntúa la especie más repetida a su alrededor y todo lo conectado, × su número</span></h1>
-        <p style="color:var(--muted);line-height:1.65;font-size:14px">
-          Empiezas con tu <b style="color:#8FD0DC">farol I</b> y una <b style="color:var(--ink)">mano de 3 cartas</b>.<br><br>
-          <b style="color:var(--gold)">Tu turno:</b> plantas <b>3 cartas</b> en tu jardín (obligatorio, no se guardan) y repones a 3 robando <b>del display visible y/o del mazo</b>, a tu elección, carta a carta.<br>
-          El display siempre vuelve a 3 al final de cada turno.<br><br>
-          <b style="color:var(--gold)">🏮 La cadena:</b> en cuanto rodeas un farol (sus 6 vecinos ocupados), <b>colocas el siguiente farol al instante</b>, antes de seguir plantando: rodea tu farol <b style="color:#8FD0DC">I</b> → token del nivel I (5/3/2/1) + colocas el farol <b style="color:#E8C45A">II</b>. Rodéalo → token II (7/5/3/2) + farol <b style="color:#E8965A">III</b>. Rodéalo → token III (9/7/5/3). Puedes encadenar varios faroles en un mismo turno.<br><br>
-          <b>Puntuación final:</b><br>
-          · <b>Bichos (colmena):</b> cada farol cobra por un bicho que lo toca, contando <b>todo el grupo conexo continuo</b> de ese bicho (aunque se aleje del farol, mientras la cadena no se rompa). <b>Cada especie solo la cobra un farol.</b> Conviene una colmena continua por farol, cada una de una especie distinta.<br>
-          · <b>Tokens</b> de la carrera.<br>
-          · <b>Ornamentos de color:</b> en cuanto tu grupo conexo de un color llega a <b>3 o más</b> cartas, te llevas el token de ese ornamento. Otro jugador solo te lo puede robar si <b>supera</b> tu tamaño — empatar no basta. Al final de la partida, quien posea cada token cobra sus puntos (2 por carta, o 1 por carta según el modo elegido).<br><br>
-          Fin de partida (lo que ocurra primero): <b>(1)</b> cuando un jugador <b>coloca su farol III</b>, se completa la ronda en curso y se juega <b>una ronda final</b> sin robar. <b>(2)</b> cuando se <b>agota el mazo de robo</b>, se completa la ronda actual hasta el último jugador (sin robar) y termina, sin ronda final extra. Al dispararse cualquiera de los dos, ya no se repone la mano del mazo.<br>
-          Mazo único de <b>75 cartas</b> (3 copias de cada combinación) para cualquier número de jugadores.
-        </p>
+        <h1 style="font-size:40px;text-align:center;margin-bottom:8px">Niwa</h1>
         <div style="margin:24px 0">
           <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Jugadores</div>
           <div style="display:flex;gap:10px">
@@ -965,25 +953,7 @@ function render(){
               </div>`).join("")}
           </div>
         </div>
-        <div style="margin:24px 0;border-top:1px solid var(--border);padding-top:20px">
-          <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Puntuación de ornamentos de color</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
-            ${Object.entries(MAY_RATES).map(([k,n])=>`<button class="tab ${(S.mayRate||"2y1")===k?"active":""}" data-setrate="${k}">${n}</button>`).join("")}
-          </div>
-          <div style="color:var(--dim);font-size:11px;margin-bottom:16px">Al llegar a 3+ cartas del mismo color te llevas su token. Solo te lo roban si te superan — empatar no basta.</div>
-          <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Tokens de la carrera de faroles</div>
-          <div style="display:flex;gap:6px;margin-bottom:16px">
-            <button class="tab ${S.tokMode==="off"?"active":""}" data-settok="off">No cuentan (base)</button>
-            <button class="tab ${S.tokMode==="on"?"active":""}" data-settok="on">Sí cuentan (módulo)</button>
-          </div>
-          <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Regla de faroles</div>
-          <div style="display:flex;gap:6px">
-            <button class="tab ${!S.noHoles?"active":""}" data-setholes="off">Libre</button>
-            <button class="tab ${S.noHoles?"active":""}" data-setholes="on">Sin huecos internos</button>
-          </div>
-          <div style="color:var(--dim);font-size:11px;margin-top:6px">"Sin huecos": el farol debe colocarse con al menos un vecino libre, y no puedes dejar una casilla vacía rodeada por completo. Evita preparar nidos y cerrar faroles de golpe.</div>
-        </div>
-        <button class="btn gold" data-start="1" style="font-size:16px;padding:12px 28px">Empezar partida</button>
+        <button class="btn gold" data-start="1" style="font-size:16px;padding:12px 28px;width:100%">Empezar partida</button>
       </div>`;
     const DEFAULT_NAMES=["Tú","Gael","Lara","Miri"];
     app.querySelectorAll("[data-npl]").forEach(b=>b.onclick=()=>{
@@ -1026,15 +996,11 @@ function render(){
     app.innerHTML=`
       <h1 style="font-size:28px">Fin de partida</h1>
       <div class="panel" style="margin-bottom:20px">
-        <div class="ptitle">Ornamentos — cambia para comparar</div>
-        ${mayRateToggle()}
-        <div class="ptitle" style="margin-top:6px">Tokens de la carrera</div>
-        ${tokModeToggle()}
         <table>
-          <tr><th>Jugador</th><th>Faroles (bichos)</th><th>Tokens 🏅</th><th>Ornamentos color</th><th>Total</th></tr>
+          <tr><th>Jugador</th><th>Faroles (bichos)</th><th>Ornamentos color</th><th>Total</th></tr>
           ${ranked.map((p,i)=>`<tr class="${i===0?"winner":""}">
             <td>${i===0?"🏆 ":""}${p.name}${p.profile?` <span style="color:var(--dim);font-weight:400">(${PROFILE_NAMES[p.profile]||p.profile})</span>`:""}</td>
-            <td>${p.fPts}${p.fDetail?` <span style="color:var(--dim);font-size:10px">(${p.fDetail.filter(d=>d.bug).map(d=>BUGS[d.bug]+" "+d.count+"×"+d.mult+" = "+d.pts+(d.prov?" (sin cerrar)":"")).join(", ")||"—"})</span>`:""}</td><td style="${tokOn?"":"opacity:.35;text-decoration:line-through"}">${p.fichasPts} (${p.fichas.join("+")||"—"})</td>
+            <td>${p.fPts}${p.fDetail?` <span style="color:var(--dim);font-size:10px">(${p.fDetail.filter(d=>d.bug).map(d=>BUGS[d.bug]+" "+d.count+"×"+d.mult+" = "+d.pts+(d.prov?" (sin cerrar)":"")).join(", ")||"—"})</span>`:""}</td>
             <td>${p.mayPts} ${Object.keys(p.mayDetail).length?`<span style="color:var(--dim);font-size:10px">(${Object.entries(p.mayDetail).map(([c,v])=>COLORS[c].n+" grupo "+v.g+"→"+v.pts).join(", ")})</span>`:""}</td>
             <td style="font-weight:700;color:var(--gold)">${p.total}</td></tr>`).join("")}
         </table>
@@ -1047,7 +1013,7 @@ function render(){
     app.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.viewTab=+b.dataset.tab;render();});
     app.querySelectorAll("[data-setrate]").forEach(b=>b.onclick=()=>{S.mayRate=b.dataset.setrate;render();});
     app.querySelectorAll("[data-tokmode]").forEach(b=>b.onclick=()=>{S.tokMode=b.dataset.tokmode;render();});
-    app.querySelector("[data-new]").onclick=()=>{S={screen:"setup",playerConfigs:S.playerConfigs,mayRate:S.mayRate,tokMode:S.tokMode,noHoles:S.noHoles};render();};
+    app.querySelector("[data-new]").onclick=()=>{S={screen:"setup",playerConfigs:S.playerConfigs,mayRate:"1y0",tokMode:"off",noHoles:true};render();};
     fitBoards();return;
   }
 
@@ -1112,7 +1078,7 @@ function render(){
 
   app.innerHTML=`
     <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:12px;flex-wrap:wrap">
-      <h1 style="font-size:24px;margin:0">KURA <span style="color:var(--gold)">·</span> Mahjong Nueva 10</h1>
+      <h1 style="font-size:24px;margin:0">Niwa</h1>
       <span style="color:var(--muted);font-size:13px">Mazo: ${S.deck.length} · Turno ${S.turnNum}${S.inFinalRound?' · <b style="color:var(--gold)">🌅 ronda final</b>':S.endTriggered?' · <b style="color:var(--gold)">🌅 fin anunciado</b>':''}</span>
       <span style="margin-left:auto;font-size:14px;font-weight:600;color:${myTurn?"var(--gold)":"var(--muted)"}">${myTurn?"● Tu turno":"● Turno de "+curP.name+"…"}</span>
       <button class="btn" data-restart="1" style="font-size:12px;padding:6px 12px">↺ Nueva partida</button>
@@ -1138,25 +1104,10 @@ function render(){
         </div>
         <div class="panel" style="margin-top:12px">
           <div class="ptitle">Ornamentos de color (en vivo)</div>
-          ${mayRateToggle()}
           ${mayoriasHtml()}
         </div>
       </div>
       <div style="flex:0 0 320px;display:flex;flex-direction:column;gap:14px">
-        <div class="panel">
-          <div class="ptitle">Reglas</div>
-          <div style="display:flex;gap:4px;margin-bottom:4px">
-            <button class="tab" data-setholes="off" style="font-size:10px;padding:4px 8px;${!S.noHoles?"background:var(--gold);color:#1A1408":""}">Faroles: libre</button>
-            <button class="tab" data-setholes="on" style="font-size:10px;padding:4px 8px;${S.noHoles?"background:var(--gold);color:#1A1408":""}">Sin huecos internos</button>
-          </div>
-          ${S.noHoles?'<div class="hint">El farol necesita un vecino libre y no puedes encerrar casillas vacías</div>':''}
-        </div>
-        <div class="panel">
-          <div class="ptitle">Tokens de la carrera</div>
-          ${tokModeToggle()}
-          ${pilesHtml()}
-          ${S.tokMode==="off"?'<div class="hint">Los tokens se reclaman pero NO suman puntos (modo análisis)</div>':''}
-        </div>
         <div class="panel">
           <div class="ptitle">Marcador (en vivo)</div>${scoreboard}
         </div>
@@ -1180,7 +1131,7 @@ function render(){
   const bRe=app.querySelector("[data-restart]");
   if(bRe)bRe.onclick=()=>{
     if(confirm("¿Empezar una nueva partida? Se perderá la actual."))
-      {S={screen:"setup",playerConfigs:S.playerConfigs,mayRate:S.mayRate,tokMode:S.tokMode,noHoles:S.noHoles};render();}
+      {S={screen:"setup",playerConfigs:S.playerConfigs,mayRate:"1y0",tokMode:"off",noHoles:true};render();}
   };
   fitBoards();
 }

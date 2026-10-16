@@ -65,6 +65,10 @@ a{color:inherit;}
   border:1px solid rgba(124,166,224,.4);border-radius:10px;padding:7px 13px;
   box-shadow:0 1px 0 rgba(255,255,255,.05) inset;transition:transform .15s ease,border-color .15s ease;}
 .py-mech:hover{transform:translateY(-2px);border-color:var(--acc2);}
+.py-pub{margin-top:14px;}
+.py-pub-k{display:block;text-transform:uppercase;letter-spacing:1px;font-size:.68rem;color:var(--mut);margin-bottom:3px;}
+.py-pub-v{color:var(--tx);font-size:.95rem;}
+.py-dbody{margin-top:24px;}
 .py-ddesc{color:#d6dee7;font-size:1rem;}
 .py-bgg{display:inline-block;margin-top:14px;color:var(--acc2);text-decoration:none;font-size:.9rem;}
 .py-bgg:hover{text-decoration:underline;}

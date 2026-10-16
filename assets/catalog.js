@@ -59,13 +59,19 @@
           mechs.map(function (m) { return '<span class="py-mech">' + esc(m) + '</span>'; }).join('') + '</div></div>'
         : '';
 
+      var pubs = (window.PUB && window.PUB[g.i]) || [];
+      var pubHTML = pubs.length
+        ? '<div class="py-pub"><span class="py-pub-k">Editorial</span><span class="py-pub-v">' + pubs.map(esc).join(' · ') + '</span></div>'
+        : '';
+
       detV.innerHTML = '<button class="py-back">&larr; Volver</button>' +
         '<div class="py-dhead">' + coverHTML +
-        '<div class="py-dinfo"><h2>' + esc(g.n) + '</h2><div class="py-dyear">' + esc(g.y) + '</div>' + stats +
-        mechHTML +
+        '<div class="py-dinfo"><h2>' + esc(g.n) + '</h2><div class="py-dyear">' + esc(g.y) + '</div>' + stats + pubHTML +
+        '</div></div>' +
+        '<div class="py-dbody">' + mechHTML +
         '<p class="py-ddesc">' + esc(g.d) + '</p>' +
         '<a class="py-bgg" href="https://boardgamegeek.com/boardgame/' + g.i + '" target="_blank" rel="noopener">Ver ficha completa en BoardGameGeek &rarr;</a>' +
-        '</div></div>' + gall;
+        '</div>' + gall;
 
       detV.querySelector('.py-back').addEventListener('click', showList);
       detV.querySelectorAll('.py-gall img').forEach(function (im) {

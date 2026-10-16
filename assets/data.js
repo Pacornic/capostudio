@@ -54,6 +54,26 @@ window.MECH = {
   "428723": ["Mayorías de área", "Apuestas y faroleo", "Gestión de la mano", "Colección de sets"]
 };
 
+/* Editoriales por juego (traídas de BGG). Clave = id del juego. */
+window.PUB = {
+  "131241": ["ABBA Games"],
+  "203002": ["Zacatrus"],
+  "228101": ["Evrikus", "Ludopolis", "Zacatrus"],
+  "256621": ["Zacatrus"],
+  "293777": ["ABBA Games"],
+  "277109": ["Last Level", "Taverna Ludica Games"],
+  "298147": ["Zoch Verlag"],
+  "239031": ["TCG Factory"],
+  "355205": ["Zacatrus"],
+  "378958": ["Zoch Verlag"],
+  "368352": ["Giant Roc", "Lifestyle Boardgames Ltd", "Perro Loko Games"],
+  "402674": ["Devir", "999 Games", "GaGa Games"],
+  "434143": ["Funnyfox", "AllGo-Games", "Gémklub", "Hachette Boardgames Benelux"],
+  "455368": ["Last Level"],
+  "309416": ["TCG Factory"],
+  "428723": ["En búsqueda de editorial"]
+};
+
 /* ============================================================
    PROTOTIPOS JUGABLES (pestaña "En desarrollo").
    Para añadir uno: copia su carpeta/HTML dentro de /dev/ y

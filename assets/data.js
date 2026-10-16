@@ -87,7 +87,7 @@ window.PROTOS = [
     players: "2-4 jugadores",
     time: "20 min",
     tags: ["Tile Placement","Set Colletion","Open Drafting","End Game Bonuses"],
-    path: "dev/The Wild Call/the-wild-call.html",
+    path: "dev/Niwa/Niwa.html",
     rulebook: "",
    // updated: "2026-10-16"
   }

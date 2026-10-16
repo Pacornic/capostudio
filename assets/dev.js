@@ -1,9 +1,13 @@
 /* Motor de la pestaña "En desarrollo": lista de prototipos jugables.
-   Cada prototipo: previsualizar (iframe), abrir a pantalla completa y copiar enlace.
-   Si proto.code tiene valor, pide ese código antes de abrir (capa disuasoria, NO seguridad real). */
+   Cada prototipo se abre con un botón "Abrir". Si proto.code tiene valor,
+   pide ese código y, si es correcto, incrusta el prototipo en un iframe aquí
+   mismo (no se abre en pestaña nueva ni se ofrece copiar enlace, para no
+   repartir la URL directa que saltaría el código).
+   AVISO: es una capa DISUASORIA, no seguridad real. El archivo se sirve
+   público; quien conozca/inspeccione su URL puede abrirlo igualmente.
+   Para protección real: Password Protection de Vercel o un Edge Middleware. */
 (function () {
   function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-  function absURL(path){ return new URL(path, window.location.href).href; }
 
   window.initDev = function (opts) {
     var mount = document.querySelector(opts.mount);
@@ -22,9 +26,7 @@
         (meta ? '<div class="meta">' + meta + '</div>' : '') +
         '<p class="pdesc">' + esc(p.desc || '') + '</p>' +
         '<div class="py-actions">' +
-          '<button class="py-btn primary" data-act="preview">Previsualizar aquí</button>' +
-          '<button class="py-btn" data-act="open">Abrir a pantalla completa</button>' +
-          '<button class="py-btn" data-act="copy">Copiar enlace</button>' +
+          '<button class="py-btn primary" data-act="open">Abrir' + (locked ? ' con código' : '') + '</button>' +
         '</div>' +
         '<div class="slot"></div>' +
         '</div>';
@@ -34,36 +36,25 @@
       var p = protos[+el.getAttribute('data-idx')];
       var slot = el.querySelector('.slot');
 
-      function requireCode(onok) {
-        if (!(p.code && p.code.length)) { onok(); return; }
+      function embed() {
+        slot.innerHTML = '<div class="py-frame-wrap"><iframe src="' + esc(p.path) + '" title="' + esc(p.name) + '"></iframe></div>';
+      }
+
+      el.querySelector('[data-act="open"]').addEventListener('click', function () {
+        if (!(p.code && p.code.length)) { embed(); return; }
         slot.innerHTML = '<div class="py-codebox">' +
           '<input type="password" placeholder="Código de acceso" />' +
           '<button class="py-btn primary">Entrar</button>' +
           '<span class="err" style="display:none">Código incorrecto</span></div>' +
-          '<div class="py-note">Nota: esta protección es solo disuasoria. Para seguridad real usa un enlace no adivinable o la protección por contraseña de Vercel.</div>';
+          '<div class="py-note">Nota: protección disuasoria, no seguridad real.</div>';
         var inp = slot.querySelector('input');
         var err = slot.querySelector('.err');
         slot.querySelector('button').addEventListener('click', function () {
-          if (inp.value === p.code) { slot.innerHTML = ''; onok(); }
+          if (inp.value === p.code) { embed(); }
           else { err.style.display = 'inline'; }
         });
+        inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { if (inp.value === p.code) embed(); else err.style.display = 'inline'; } });
         inp.focus();
-      }
-
-      el.querySelector('[data-act="preview"]').addEventListener('click', function () {
-        requireCode(function () {
-          slot.innerHTML = '<div class="py-frame-wrap"><iframe src="' + esc(p.path) + '" title="' + esc(p.name) + '"></iframe></div>';
-        });
-      });
-      el.querySelector('[data-act="open"]').addEventListener('click', function () {
-        requireCode(function () { window.open(p.path, '_blank', 'noopener'); });
-      });
-      el.querySelector('[data-act="copy"]').addEventListener('click', function (e) {
-        var url = absURL(p.path);
-        navigator.clipboard && navigator.clipboard.writeText(url).then(function () {
-          var b = e.target; var old = b.textContent; b.textContent = 'Enlace copiado ✓';
-          setTimeout(function () { b.textContent = old; }, 1600);
-        }, function () { window.prompt('Copia el enlace:', url); });
       });
     });
   };

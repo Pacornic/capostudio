@@ -45,8 +45,7 @@
         slot.innerHTML = '<div class="py-codebox">' +
           '<input type="password" placeholder="Código de acceso" />' +
           '<button class="py-btn primary">Entrar</button>' +
-          '<span class="err" style="display:none">Código incorrecto</span></div>' +
-          // '<div class="py-note">Nota: protección disuasoria, no seguridad real.</div>';
+          '<span class="err" style="display:none">Código incorrecto</span></div>';
         var inp = slot.querySelector('input');
         var err = slot.querySelector('.err');
         slot.querySelector('button').addEventListener('click', function () {

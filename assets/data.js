@@ -34,6 +34,26 @@ window.GAMES = [
   {i:"428723",n:"Banzai",y:"Próximamente",cat:"soon",pl:"2-5",t:"20-30 min",ag:"8+",d:"Prepárate para desafiar a los demás clanes de la ciudad.",c:null,p:[]}
 ];
 
+/* Mecánicas por juego (traídas de BGG). Clave = id del juego. Edita libremente. */
+window.MECH = {
+  "131241": ["Mayorías de área", "Subasta / Pujas", "Selección simultánea de acciones", "Colocación de trabajadores"],
+  "203002": ["Memoria", "Tentar la suerte", "Colección de sets"],
+  "228101": ["Gestión de la mano", "Draft abierto", "Colección de sets"],
+  "256621": ["Mayorías de área", "Gestión de la mano", "Recoger y entregar", "Fastidiar al rival"],
+  "293777": ["Colección de sets"],
+  "277109": ["Mayorías de área", "Colocación de trabajadores"],
+  "298147": ["Gestión de la mano", "Tentar la suerte", "Fastidiar al rival"],
+  "239031": ["Mayorías de área", "Tentar la suerte", "Colección de sets", "Fastidiar al rival"],
+  "355205": ["Gestión de la mano", "Draft abierto", "Colección de sets"],
+  "378958": ["Memoria", "Fastidiar al rival"],
+  "368352": ["Draft abierto", "Juego en solitario", "Colocación de trabajadores (distintos tipos)"],
+  "402674": ["Gestión de la mano", "Tentar la suerte", "Fastidiar al rival"],
+  "434143": ["Tentar la suerte", "Colección de sets"],
+  "455368": ["Mercado", "Negociación", "Colección de sets"],
+  "309416": ["Cobertura de cuadrícula", "Tentar la suerte", "Colocación de losetas"],
+  "428723": ["Mayorías de área", "Apuestas y faroleo", "Gestión de la mano", "Colección de sets"]
+};
+
 /* ============================================================
    PROTOTIPOS JUGABLES (pestaña "En desarrollo").
    Para añadir uno: copia su carpeta/HTML dentro de /dev/ y

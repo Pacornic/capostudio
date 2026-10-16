@@ -53,9 +53,16 @@
           g.p.map(function (t) { var u = window.PHOTO(t); return '<img loading="lazy" src="' + u + '" data-full="' + u + '" alt="' + esc(g.n) + '">'; }).join('') + '</div>'
         : '<div class="py-gallt">Fotos</div><p class="py-nogall">Aún no hay fotos disponibles en BGG para este juego.</p>';
 
+      var mechs = (window.MECH && window.MECH[g.i]) || [];
+      var mechHTML = mechs.length
+        ? '<div class="py-mechs"><div class="py-mechs-t">⚙️ Mecánicas</div><div class="py-mechwrap">' +
+          mechs.map(function (m) { return '<span class="py-mech">' + esc(m) + '</span>'; }).join('') + '</div></div>'
+        : '';
+
       detV.innerHTML = '<button class="py-back">&larr; Volver</button>' +
         '<div class="py-dhead">' + coverHTML +
         '<div class="py-dinfo"><h2>' + esc(g.n) + '</h2><div class="py-dyear">' + esc(g.y) + '</div>' + stats +
+        mechHTML +
         '<p class="py-ddesc">' + esc(g.d) + '</p>' +
         '<a class="py-bgg" href="https://boardgamegeek.com/boardgame/' + g.i + '" target="_blank" rel="noopener">Ver ficha completa en BoardGameGeek &rarr;</a>' +
         '</div></div>' + gall;

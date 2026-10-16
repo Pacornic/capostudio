@@ -54,6 +54,17 @@ a{color:inherit;}
 .py-stat{background:var(--card2);border-radius:10px;padding:8px 14px;min-width:82px;}
 .py-stat .k{font-size:.68rem;color:var(--mut);text-transform:uppercase;letter-spacing:1px;}
 .py-stat .v{font-size:1.1rem;font-weight:600;}
+/* Bloques de mecánicas (categoría aparte, look fancy) */
+.py-mechs{margin:0 0 20px;padding:14px 16px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(74,163,224,.14),rgba(124,106,224,.12));
+  border:1px solid rgba(74,163,224,.28);}
+.py-mechs-t{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--acc2);margin-bottom:10px;}
+.py-mechwrap{display:flex;flex-wrap:wrap;gap:9px;}
+.py-mech{font-size:.85rem;font-weight:500;color:#dCE8f6;
+  background:linear-gradient(135deg,rgba(74,163,224,.25),rgba(124,106,224,.22));
+  border:1px solid rgba(124,166,224,.4);border-radius:10px;padding:7px 13px;
+  box-shadow:0 1px 0 rgba(255,255,255,.05) inset;transition:transform .15s ease,border-color .15s ease;}
+.py-mech:hover{transform:translateY(-2px);border-color:var(--acc2);}
 .py-ddesc{color:#d6dee7;font-size:1rem;}
 .py-bgg{display:inline-block;margin-top:14px;color:var(--acc2);text-decoration:none;font-size:.9rem;}
 .py-bgg:hover{text-decoration:underline;}

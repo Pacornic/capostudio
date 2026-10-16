@@ -2,14 +2,18 @@
    Datos del catálogo. Editar aquí para añadir o cambiar juegos.
    ============================================================ */
 
-/* Reconstrucción de URLs de imágenes de BoardGameGeek */
+/* Reconstrucción de URLs de imágenes de BoardGameGeek.
+   Acepta token comprimido "H1~H2~pic" (datos curados) o una URL completa
+   http(s) (lo que trae la actualización automática para juegos nuevos). */
 window.COVER = function (t) {
   if (!t) return null;
+  if (/^https?:\/\//.test(t)) return t;
   var s = t.split('~');
   return 'https://cf.geekdo-images.com/' + s[0] + '__itemrep/img/' + s[1] + '=/fit-in/246x300/filters:strip_icc()/' + s[2];
 };
 window.PHOTO = function (t) {
   if (!t) return null;
+  if (/^https?:\/\//.test(t)) return t;
   var s = t.split('~');
   return 'https://cf.geekdo-images.com/' + s[0] + '__large/img/' + s[1] + '=/fit-in/1024x1024/filters:no_upscale():strip_icc()/' + s[2];
 };

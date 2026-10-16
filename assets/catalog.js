@@ -47,7 +47,7 @@
         '</div>';
       var coverHTML = cov
         ? '<img class="py-dcover" src="' + cov + '" alt="' + esc(g.n) + '">'
-        : '<div class="py-dcover" style="width:220px;height:280px;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:.85rem;text-align:center;padding:14px;">Imagen no disponible todavía</div>';
+        : '<div class="py-dcover" style="width:253px;height:322px;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:.85rem;text-align:center;padding:14px;">Imagen no disponible todavía</div>';
       var gall = g.p && g.p.length
         ? '<div class="py-gallt">Fotos</div><div class="py-gall">' +
           g.p.map(function (t) { var u = window.PHOTO(t); return '<img loading="lazy" src="' + u + '" data-full="' + u + '" alt="' + esc(g.n) + '">'; }).join('') + '</div>'
@@ -55,20 +55,20 @@
 
       var mechs = (window.MECH && window.MECH[g.i]) || [];
       var mechHTML = mechs.length
-        ? '<div class="py-mechs"><div class="py-mechs-t">⚙️ Mecánicas</div><div class="py-mechwrap">' +
-          mechs.map(function (m) { return '<span class="py-mech">' + esc(m) + '</span>'; }).join('') + '</div></div>'
+        ? '<div class="py-mechs-t">Mecánicas</div><div class="py-stats py-mechrow">' +
+          mechs.map(function (m) { return '<div class="py-stat py-mechbox">' + esc(m) + '</div>'; }).join('') + '</div>'
         : '';
 
       var pubs = (window.PUB && window.PUB[g.i]) || [];
       var pubHTML = pubs.length
-        ? '<div class="py-pub"><span class="py-pub-k">Editorial</span><span class="py-pub-v">' + pubs.map(esc).join(' · ') + '</span></div>'
+        ? '<div class="py-pub"><span class="py-pub-k">Editorial</span><span class="py-pub-v">' + pubs.map(esc).join(', ') + '</span></div>'
         : '';
 
       detV.innerHTML = '<button class="py-back">&larr; Volver</button>' +
         '<div class="py-dhead">' + coverHTML +
-        '<div class="py-dinfo"><h2>' + esc(g.n) + '</h2><div class="py-dyear">' + esc(g.y) + '</div>' + stats + pubHTML +
+        '<div class="py-dinfo"><h2>' + esc(g.n) + '</h2><div class="py-dyear">' + esc(g.y) + '</div>' + stats + mechHTML + pubHTML +
         '</div></div>' +
-        '<div class="py-dbody">' + mechHTML +
+        '<div class="py-dbody">' +
         '<p class="py-ddesc">' + esc(g.d) + '</p>' +
         '<a class="py-bgg" href="https://boardgamegeek.com/boardgame/' + g.i + '" target="_blank" rel="noopener">Ver ficha completa en BoardGameGeek &rarr;</a>' +
         '</div>' + gall;

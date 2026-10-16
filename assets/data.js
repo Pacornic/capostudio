@@ -62,17 +62,17 @@ window.GAMES = [
 window.PROTOS = [
   {
     name: "The Wild Call",
-    subtitle: "Prototipo en desarrollo",
-    type: "Juego de mesa",
+    // subtitle: "Prototipo en desarrollo",
+    type: "Card Game",
     emoji: "🐺",
     color: "#2f4a3a",
     desc: "Edita esta descripción con la temática y el objetivo del juego.",
     players: "2-5 jugadores",
     time: "20 min",
-    tags: ["Trick Taking","Set Collection"],
+    tags: ["Trick Taking","Take that","Deduction"],
     path: "dev/The Wild Call/the-wild-call.html",
     rulebook: "",
-    updated: "2026-10-16"
+   // updated: "2026-10-16"
   }
   
   

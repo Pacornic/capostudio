@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paco Yanez — Próximamente</title>
+<meta name="description" content="Próximos juegos de mesa de Paco Yanez.">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<nav class="py-nav">
+  <span class="brand">Paco Yanez</span>
+  <a href="index.html">Publicados</a>
+  <a href="proximamente.html" class="active">Próximamente</a>
+  <a href="desarrollo.html">En desarrollo</a>
+</nav>
+<main class="py-wrap">
+  <h1>Próximamente</h1>
+  <p class="py-lead">Juegos ya anunciados que verán la luz pronto.</p>
+  <div id="app"></div>
+</main>
+<script src="assets/data.js"></script>
+<script src="assets/catalog.js"></script>
+<script>initCatalog({category:"soon", mount:"#app"});</script>
+</body>
+</html>

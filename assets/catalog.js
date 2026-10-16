@@ -29,8 +29,10 @@
       var thumb = cov
         ? '<div class="py-thumb" style="background-image:url(\'' + cov + '\')"></div>'
         : '<div class="py-thumb"><div class="py-noimg">Imagen no disponible todavía</div></div>';
+      var cpubs = (window.PUB && window.PUB[g.i]) || [];
+      var cpubLine = cpubs.length ? '<div class="py-cpub">' + esc(cpubs.join(', ')) + '</div>' : '';
       return '<div class="py-card" data-idx="' + idx + '">' + thumb +
-        '<div class="py-cbody"><div class="py-cname">' + esc(g.n) + '</div><div class="py-cyear">' + esc(g.y) + '</div></div></div>';
+        '<div class="py-cbody"><div class="py-cname">' + esc(g.n) + '</div><div class="py-cyear">' + esc(g.y) + '</div>' + cpubLine + '</div></div>';
     }).join('');
 
     grid.querySelectorAll('.py-card').forEach(function (el) {

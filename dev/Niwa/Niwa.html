@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KURA · Mahjong Nueva 10</title>
+<style>
+  :root{
+    --bg:#141A26; --panel:#1D2533; --border:#2C3850; --ink:#E8E2D2;
+    --muted:#9AA3BC; --dim:#5E6880; --gold:#E8C45A; --paper:#F4EDDC;
+    --swap:#8FD0DC; --gift:#D9A8B8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:'Segoe UI',system-ui,sans-serif;padding:20px}
+  h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:.5px}
+  .wrap{max-width:1320px;margin:0 auto}
+  .btn{background:#242C3E;color:var(--ink);border:1px solid #3A4566;border-radius:8px;
+    padding:10px 18px;font-size:14px;cursor:pointer;font-family:inherit}
+  .btn.gold{background:var(--gold);color:#1A1408;border-color:var(--gold);font-weight:600}
+  .btn.cyan{background:var(--swap);color:#0A1A20;border-color:var(--swap);font-weight:600}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .tab{border:none;border-radius:7px;padding:7px 14px;font-size:13px;cursor:pointer;
+    font-family:inherit;font-weight:600;background:#242C3E;color:var(--ink)}
+  .tab.active{background:var(--gold);color:#1A1408}
+  .tab.turn{outline:2px solid var(--gold);outline-offset:2px}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .ptitle{color:var(--muted);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+  .boardwrap{background:linear-gradient(180deg,#1A2130 0%,#161C29 100%);
+    border:1px solid var(--border);border-radius:14px;position:relative;overflow:hidden}
+  .boardscroll{overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+  .boardscroll::-webkit-scrollbar{width:8px;height:8px}
+  .boardscroll::-webkit-scrollbar-thumb{background:#3A4560;border-radius:4px}
+  .banner{position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    background:var(--gold);color:#1A1408;border-radius:8px;padding:8px 16px;
+    font-size:13px;font-weight:700;z-index:5;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+  .cardq{border-radius:8px;padding:5px;box-shadow:0 2px 6px rgba(0,0,0,.4);flex-shrink:0;position:relative}
+  .cardq .inner{width:100%;height:100%;border-radius:5px;background:var(--paper);
+    display:flex;align-items:center;justify-content:center}
+  .cardq.glow{box-shadow:0 0 0 3px var(--gold),0 4px 10px rgba(0,0,0,.45)}
+  .cardq.glows{box-shadow:0 0 0 3px var(--swap),0 4px 10px rgba(0,0,0,.45)}
+  .clickable{cursor:pointer}
+  .hl{position:absolute;border-radius:8px;border:2px dashed var(--gold);cursor:pointer;
+    background:rgba(232,196,90,.08)}
+  .hl:hover{background:rgba(232,196,90,.25)}
+  .cell{position:absolute}
+  .lab{font-size:10px;color:var(--muted);margin-top:5px;text-align:center}
+  .log{max-height:190px;overflow-y:auto}
+  .log div{font-size:12px;padding:3px 0;line-height:1.45;color:var(--muted)}
+  .log .night{color:var(--gold)} .log .pulse{color:#BFD8A8}
+  .log .ring{color:#8FD0DC} .log .ficha{color:var(--gold)} .log .gift{color:var(--gift)}
+  .log .swapc{color:var(--swap)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{color:var(--muted);text-align:right;padding:6px;font-weight:600}
+  th:first-child{text-align:left}
+  td{text-align:right;padding:8px;border-top:1px solid var(--border)}
+  td:first-child{text-align:left;font-weight:600}
+  tr.winner{background:rgba(232,196,90,.12)}
+  .score-row{display:flex;justify-content:space-between;padding:6px 2px;font-size:12px}
+  .score-row+.score-row{border-top:1px solid var(--border)}
+  .hint{color:var(--dim);font-size:11px;margin-top:8px;line-height:1.4}
+  .miniwrap{flex:1 1 175px;min-width:155px;max-width:300px;background:linear-gradient(180deg,#1A2130 0%,#161C29 100%);
+    border:1px solid var(--border);border-radius:10px;padding:6px;cursor:pointer;transition:border-color .15s}
+  .miniwrap:hover{border-color:var(--gold)}
+  .miniwrap.myturn{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold),0 0 14px rgba(232,196,90,.5)}
+  .miniwrap.myturn .minihead{color:var(--gold)}
+  .minihead{font-size:11px;font-weight:600;color:var(--muted);padding:2px 4px 6px}
+  .miniprofile{font-size:9px;color:var(--dim);font-weight:400}
+  .token{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;
+    justify-content:center;cursor:pointer;border:2px solid transparent}
+  .token.sel{border-color:var(--gold);box-shadow:0 0 8px rgba(232,196,90,.6)}
+  .token.used{opacity:.22;cursor:not-allowed;filter:grayscale(1)}
+  .zone{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;min-height:30px}
+  .pilebox{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+  .pilechip{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:16px;color:#1A1408;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+  .pilelab{font-size:10px;color:var(--muted)}
+  .pilerest{font-size:10px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* ════════ CONSTANTES ════════ */
+const COLORS={azul:{n:"Azul",hex:"#4A7BB5"},rojo:{n:"Rojo",hex:"#C45A4E"},
+  verde:{n:"Verde",hex:"#5E8C61"},dorado:{n:"Dorado",hex:"#C9A227"},
+  violeta:{n:"Violeta",hex:"#8A6FB3"}};
+const CIDS=["azul","rojo","verde","dorado","violeta"];  // paleta original de 5 colores
+const BUGS={mariposa:"Mariposa",mariquita:"Mariquita",luciernaga:"Luciérnaga",
+  abeja:"Abeja",libelula:"Libélula"};
+const BIDS=Object.keys(BUGS);
+const REMOVE={2:0,3:0,4:0};   // Nueva 5: sin retirada — mazo completo de 80 (75+5 estanques)
+const COPIES={2:3,3:3,4:3};   // 3 copias siempre: 25 combinaciones únicas
+const N_ESTANQUES=0;   // 8b: sin estanques, mazo de 75 cartas
+const PILES=[[3,2,1,1],[4,3,2,1],[5,4,3,2]];
+const LVL_COLORS=["#8FD0DC","#E8C45A","#E8965A"];
+const LVL_ROMAN=["I","II","III"];
+const DIRS=[[1,0],[-1,0],[0,-1],[0,1],[1,-1],[-1,1]];
+const INK="#2A2520";
+const scl=n=>n<2?0:n===2?3:n===3?5:n===4?8:n===5?12:n===6?17:n===7?23:n===8?30:40;
+const Kk=(q,r)=>q+","+r;
+const pK=k=>k.split(",").map(Number);
+const nbs=k=>{const[q,r]=pK(k);return DIRS.map(([dq,dr])=>Kk(q+dq,r+dr));};
+const CW=56,CH=78,GX=60,GY=68;
+
+/* ════════ LÓGICA ════════ */
+function maxGroupOf(cells,attr,val){
+  const seen=new Set();let best=0;
+  const keys=Object.keys(cells).filter(k=>cells[k].t==="card"&&cells[k][attr]===val);
+  for(const s of keys){
+    if(seen.has(s))continue;
+    let sz=0;const st=[s];seen.add(s);
+    while(st.length){
+      const c=st.pop();sz++;
+      for(const n of nbs(c))
+        if(cells[n]&&cells[n].t==="card"&&cells[n][attr]===val&&!seen.has(n)){seen.add(n);st.push(n);}
+    }
+    if(sz>best)best=sz;
+  }
+  return best;
+}
+function repeatAround(cells,center,attr){
+  const cnt={};
+  for(const n of nbs(center)){const c=cells[n];if(c&&c.t==="card")cnt[c[attr]]=(cnt[c[attr]]||0)+1;}
+  let best=0,which=null;for(const k in cnt)if(cnt[k]>best){best=cnt[k];which=k;}
+  return{count:best,which,pts:scl(best)};
+}
+// recuento de cada bicho alrededor de un farol (para la exclusión de especie)
+function bugCountsAround(cells,center){
+  const cnt={};
+  for(const n of nbs(center)){const c=cells[n];if(c&&c.t==="card")cnt[c.b]=(cnt[c.b]||0)+1;}
+  return cnt;
+}
+// COLMENA: mayor grupo CONEXO de 'bug' que toca el farol 'center'.
+// Cada carta de 'bug' que toca el farol puede iniciar un grupo conexo distinto;
+// se cuenta el mayor de ellos (no la unión de fragmentos desconectados).
+function colmenaSize(cells,center,bug){
+  const seeds=nbs(center).filter(n=>cells[n]&&cells[n].t==="card"&&cells[n].b===bug);
+  if(!seeds.length)return 0;
+  const globalSeen=new Set();
+  let best=0;
+  for(const seed of seeds){
+    if(globalSeen.has(seed))continue;
+    // BFS del grupo conexo que contiene esta semilla
+    const seen=new Set([seed]);const st=[seed];
+    while(st.length){
+      const cur=st.pop();
+      for(const n of nbs(cur)){
+        const c=cells[n];
+        if(c&&c.t==="card"&&c.b===bug&&!seen.has(n)){seen.add(n);st.push(n);}
+      }
+    }
+    for(const k of seen)globalSeen.add(k);
+    if(seen.size>best)best=seen.size;
+  }
+  return best;
+}
+function validPos(cells){
+  const occ=new Set(Object.keys(cells)),opts=new Set();
+  for(const k of occ)for(const n of nbs(k))if(!occ.has(n))opts.add(n);
+  return[...opts];
+}
+// ¿La casilla k tiene sus 6 vecinos ocupados? (está "encerrada")
+function isSurrounded(cells,k){
+  return nbs(k).every(n=>cells[n]);
+}
+/* Regla "sin huecos" (S.noHoles): al plantar una carta en 'pos', no puede quedar
+   NINGUNA casilla vacía completamente rodeada por sus 6 lados. Devuelve true si la
+   jugada es legal. Comprueba la propia pos y sus vecinos vacíos tras colocar. */
+function plantLeavesNoHole(cells,pos){
+  const sim={...cells,[pos]:{t:"card"}};
+  // casillas a revisar: los vecinos vacíos de pos (que pos podría haber encerrado)
+  for(const n of nbs(pos)){
+    if(!sim[n] && isSurrounded(sim,n))return false;   // vecino vacío quedó rodeado
+  }
+  return true;
+}
+// Posiciones válidas para PLANTAR una carta (con la regla de huecos si está activa)
+function validPlantPos(cells){
+  let opts=validPos(cells);
+  if(typeof S!=="undefined" && S.noHoles)
+    opts=opts.filter(pos=>plantLeavesNoHole(cells,pos));
+  return opts;
+}
+// Posiciones válidas para un ESTANQUE: como plantar, pero nunca junto a otro estanque
+function validEstanquePos(cells){
+  return validPlantPos(cells).filter(pos=>!nbs(pos).some(n=>cells[n]&&cells[n].t==="estanque"));
+}
+/* Puntuación de Estanques: cada estanque da 1 punto por cada COLOR de ornamento
+   distinto entre las cartas que lo tocan directamente (sus 6 vecinos). No suma
+   nada si no toca ninguna carta de color (aislado = casi 0). */
+function estanqueScore(pl,rate){
+  rate=rate||1;
+  let total=0;const detail=[];
+  for(const k of Object.keys(pl.cells)){
+    if(pl.cells[k].t!=="estanque")continue;
+    const colores=new Set();
+    for(const n of nbs(k)){
+      const c=pl.cells[n];
+      if(c&&c.t==="card")colores.add(c.c);
+    }
+    const pts=colores.size*rate;
+    total+=pts;
+    detail.push({k,colores:colores.size,pts});
+  }
+  return{total,detail};
+}
+// Posiciones válidas para colocar un FAROL: casilla vacía adyacente al jardín y,
+// si la regla está activa, con al menos un vecino libre (no en un hueco cerrado)
+function validFarolPos(cells){
+  // El farol nuevo se coloca al FINAL del turno y nunca nace ya rodeado:
+  // debe quedarle al menos 1 vecino libre (independientemente de la regla de huecos).
+  return validPos(cells).filter(pos=>nbs(pos).some(n=>!cells[n]));
+}
+/* Puntuación de faroles con COLMENA CONEXA + EXCLUSIÓN DE ESPECIE:
+   cada farol cobra por un bicho que lo toca, contando el grupo conexo entero de
+   ese bicho (aunque se aleje). Cada especie la cobra un solo farol. Asignación
+   óptima por búsqueda exhaustiva. */
+/* Puntuación de faroles (todo se resuelve al contar, en orden I→II→III):
+   · La especie que puntúa es la MÁS REPETIDA entre las cartas adyacentes al farol.
+     Empate → elige el jugador (aquí: la opción que más puntos le da).
+   · Una especie solo puntúa en un farol: si la más repetida (o todas las empatadas)
+     ya puntuó en un farol anterior, ese farol no puntúa.
+   · Grupo = bichos de esa especie adyacentes al farol + todos los de la misma especie
+     conectados a ellos (si el farol toca varias cadenas, se suman).
+   · Puntos = tamaño del grupo × número del farol (I×1, II×2, III×3). */
+function grupoFarol(cells,center,bug){
+  const seen=new Set();
+  const st=nbs(center).filter(n=>cells[n]&&cells[n].t==="card"&&cells[n].b===bug);
+  st.forEach(n=>seen.add(n));
+  while(st.length){const cur=st.pop();
+    for(const m of nbs(cur)){const c=cells[m];
+      if(c&&c.t==="card"&&c.b===bug&&!seen.has(m)){seen.add(m);st.push(m);}}}
+  return seen.size;
+}
+function farolesScore(pl){
+  const nClosed=Math.min(pl.fichas.length,pl.faroles.length);
+  const none={bug:null,count:0,pts:0};
+  function rec(i,used){
+    if(i>=pl.faroles.length)return{total:0,assign:[]};
+    const f=pl.faroles[i];
+    const touch=bugCountsAround(pl.cells,f);
+    const ks=Object.keys(touch);
+    const mx=ks.length?Math.max(...ks.map(k=>touch[k])):0;
+    const free=ks.filter(k=>touch[k]===mx&&!used.has(k));
+    if(!free.length){const r=rec(i+1,used);return{total:r.total,assign:[none,...r.assign]};}
+    let best=null;
+    for(const b of free){
+      const cnt=grupoFarol(pl.cells,f,b),p=cnt*(i+1);
+      const u2=new Set(used);u2.add(b);
+      const r=rec(i+1,u2),tot=p+r.total;
+      if(!best||tot>best.total)best={total:tot,assign:[{bug:b,count:cnt,pts:p},...r.assign]};
+    }
+    return best;
+  }
+  const r=rec(0,new Set());
+  const detail=pl.faroles.map((f,i)=>({farol:f,bug:r.assign[i].bug,count:r.assign[i].count,pts:r.assign[i].pts,mult:i+1,prov:i>=nClosed}));
+  return{total:r.total,detail};
+}
+function farolesPts(pl){
+  return farolesScore(pl).total;
+}
+/* Puntuación de mayorías de color (S.mayRate):
+   "2y1": el ganador de cada color cobra 2 puntos por carta de su grupo conexo mayor;
+          en empate, los empatados cobran 1 punto por carta.
+   "1y0": el ganador cobra 1 punto por carta; en empate, nadie cobra.
+   Solo puntúa el jugador con el grupo conexo mayor de cada color. */
+const MAY_RATES={"2y1":"2 pts/carta","1y0":"1 pt/carta"};
+function mayRateInfo(){
+  const r=(typeof S!=="undefined"&&S.mayRate)||"2y1";
+  return r==="1y0"?{win:1,tie:0}:{win:2,tie:1};
+}
+/* ═══ TOKEN DE ORNAMENTO (mayoría de color robable en vivo) ═══
+   Al llegar a un grupo de color de 3+, te llevas el token de ese color. Otro jugador
+   solo te lo puede robar si SUPERA tu tamaño (empatar no basta). Se comprueba justo
+   después de plantar cada carta, solo para el color de esa carta. */
+function checkColorToken(playerIdx,color,logs){
+  const pl=S.players[playerIdx];
+  const size=maxGroupOf(pl.cells,"c",color);
+  if(size<3)return;
+  const cur=S.colorTokens[color];
+  if(!cur){
+    S.colorTokens[color]={owner:playerIdx,size};
+    if(logs)logs.push({k:"ring",x:`🎏 ${pl.name} consigue el ornamento ${COLORS[color].n} (${size})`});
+  }else if(cur.owner===playerIdx){
+    if(size>cur.size)cur.size=size;   // sigue creciendo su propio grupo, sin robo
+  }else if(size>cur.size){
+    const prevName=S.players[cur.owner].name;
+    if(logs)logs.push({k:"ring",x:`🎏 ${pl.name} le quita el ornamento ${COLORS[color].n} a ${prevName} (${size} > ${cur.size})`});
+    S.colorTokens[color]={owner:playerIdx,size};
+  }
+}
+// Puntuación final de mayorías: solo puntúa quien posea el token de cada color al acabar.
+function colorTokenScore(players){
+  const res=players.map(()=>0);
+  const detail=players.map(()=>({}));
+  const rate=mayRateInfo().win;
+  for(const c of CIDS){
+    const tok=S.colorTokens[c];
+    if(!tok)continue;
+    const finalSize=maxGroupOf(players[tok.owner].cells,"c",c);   // recalculado sobre el tablero final
+    const pts=finalSize*rate;
+    res[tok.owner]+=pts;
+    detail[tok.owner][c]={pts,g:finalSize};
+  }
+  return{res,detail};
+}
+/* Toggle único de tarifa de mayorías */
+function mayRateToggle(){
+  return '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">'+
+    Object.entries(MAY_RATES).map(([k,n])=>
+      `<button class="tab" data-setrate="${k}" style="font-size:10px;padding:4px 8px;${(S.mayRate||"2y1")===k?"background:var(--gold);color:#1A1408":""}">${n}</button>`).join("")+"</div>";
+}
+function tokModeToggle(){
+  return '<div style="display:flex;gap:4px;margin-bottom:8px">'+
+    ['on','off'].map(k=>
+      `<button class="tab" data-tokmode="${k}" style="font-size:10px;padding:4px 8px;${S.tokMode===k?"background:var(--gold);color:#1A1408":""}">${k==="on"?"Tokens: SÍ cuentan":"Tokens: NO cuentan"}</button>`).join("")+"</div>";
+}
+function makeDeck(np){
+  let d=[];
+  const nc=COPIES[np]||2;
+  for(const c of CIDS)for(const b of BIDS)for(let k=0;k<nc;k++)d.push({t:"card",c,b});
+  for(let i=0;i<N_ESTANQUES;i++)d.push({t:"estanque"});   // 75 + 5 = 80 cartas
+  for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}
+  d=d.slice(REMOVE[np]);
+  return d;
+}
+/* Robo del mazo. Si el mazo se agota, el fin POR MAZO PREVALECE: se completa la ronda
+   actual y termina, sin ronda final, aunque el fin ya se hubiera disparado por farol.
+   Devuelve la siguiente carta, o null si no hay. */
+function drawFromDeckRaw(logs){
+  if(S.deck.length)return S.deck.shift();
+  // Mazo agotado: impone el fin por mazo (prevalece sobre el farol) y corta la reposición.
+  if(S.endBy!=="mazo"){
+    const prevFarol=S.endBy==="farol";
+    S.endTriggered=true;S.endJust=true;S.endBy="mazo";S.inFinalRound=true;
+    if(logs)logs.push({k:"night",x:prevFarol
+      ?"🌅 El mazo se agota antes de la ronda final — prevalece el mazo: se completa la ronda actual y termina"
+      :"🌅 El mazo de robo se agota — se completa la ronda actual"});
+  }
+  return null;
+}
+function refillDisplay(logs){
+  // Conveyor: las cartas que quedan se desplazan a la derecha (posiciones altas).
+  // Las nuevas del mazo entran por la izquierda (posiciones bajas).
+  const remaining=[...S.display];
+  S.display=[];
+  const toFill=4-remaining.length;
+  for(let i=0;i<toFill;i++){
+    const c=drawFromDeckRaw(logs);
+    if(c)S.display.push(c);else break;
+  }
+  S.display.push(...remaining);   // viejas a la derecha
+}
+
+/* ════════ CADENA DE FAROLES ════════ */
+function triggerEndIfThird(pl,logs){
+  if(pl.faroles.length>=3&&!S.endTriggered){
+    S.endTriggered=true;S.endJust=true;S.endBy="farol";
+    logs.push({k:"night",x:`🌅 ${pl.name} coloca su farol III — se completa la ronda y se juega 1 ronda final`});
+  }
+}
+function activeFarol(pl){
+  const i=pl.fichas.length;
+  return i<pl.faroles.length?pl.faroles[i]:null;
+}
+/* Cierre de farol: al rodearlo ganas el token de la carrera y podrás colocar el
+   siguiente al final del turno. La especie que puntúa NO se fija aquí: se decide al contar. */
+function checkChainAuto(pl,st,logs,farolPlacer){
+  for(let guard=0;guard<8;guard++){
+    const lvl=pl.fichas.length;
+    if(lvl>=3)break;
+    if(lvl>=pl.faroles.length)break;
+    const f=pl.faroles[lvl];
+    if(!nbs(f).every(n=>pl.cells[n]))break;
+    const ord=st.claimed[lvl];
+    const pts=ord<PILES[lvl].length?PILES[lvl][ord]:0;
+    pl.fichas.push(pts);st.claimed[lvl]++;
+    if(pts>0)logs.push({k:"ficha",x:`🏅 ${pl.name} rodea su farol ${LVL_ROMAN[lvl]} · token de ${pts} pts (${ord+1}º del nivel)`});
+    else logs.push({k:"ficha",x:`${pl.name} rodea su farol ${LVL_ROMAN[lvl]} — sin token (nivel agotado)`});
+    if(lvl<2)pl.pendingNextFarolLevel=lvl;
+  }
+  return false;
+}
+
+/* ════════ IA ════════ */
+function usedSpeciesClosed(pl){
+  if(pl._usedC)return pl._usedC;
+  const n=Math.min(pl.fichas.length,pl.faroles.length);
+  return new Set(farolesScore(pl).detail.filter((d,i)=>i<n&&d.bug).map(d=>d.bug));
+}
+// Cuántas cartas de un atributo/valor tiene disponibles el jugador (mano + display visible)
+function availableOf(pl,attr,val){
+  let n=0;
+  if(typeof S!=="undefined"&&S.display)for(const cd of S.display)if(cd[attr]===val)n++;
+  return n;
+}
+// Mejor grupo de color de CUALQUIER rival (para saber si una mayoría es disputable)
+function bestRivalColorGroup(mePl,color){
+  let best=0;
+  for(const p of S.players){
+    if(p===mePl)continue;
+    const g=maxGroupOf(p.cells,"c",color);
+    if(g>best)best=g;
+  }
+  return best;
+}
+function placeValue(pl,pos,c,b,st,speed){
+  const cells=pl.cells;
+  const isQuality = pl.profile==="quality";
+  // valor de mayoría: crecer el grupo mayor propio del color (aprox local)
+  function localDelta(attr,val){
+    const seen=new Set();const sizes=[];
+    for(const n of nbs(pos)){
+      const cc=cells[n];
+      if(cc&&cc.t==="card"&&cc[attr]===val&&!seen.has(n)){
+        let sz=0;const stq=[n];seen.add(n);
+        while(stq.length){
+          const cur=stq.pop();sz++;
+          for(const m of nbs(cur)){
+            const c2=cells[m];
+            if(c2&&c2.t==="card"&&c2[attr]===val&&!seen.has(m)){seen.add(m);stq.push(m);}
+          }
+        }
+        sizes.push(sz);
+      }
+    }
+    const tot=1+sizes.reduce((a,x)=>a+x,0);
+    const pm=sizes.length?Math.max(...sizes):0;
+    return {delta:scl(tot)-scl(pm),newSize:tot};
+  }
+  // Pesos según el modo de puntuación activo:
+  const tokensCount = st.tokMode!=="off";
+  const speedW = tokensCount ? (2.0+speed*3.0) : 0.6;
+  const mayW = 0.95 * 0.6;  // prioridad de bichos: color pesa menos
+
+  const md=localDelta("c",c);
+  let colorVal=md.delta*mayW;
+
+  // ── Capa de CALIDAD: visión de futuro + lectura de rivales ──
+  if(isQuality){
+    // Potencial futuro del color: ¿cuánto podría crecer este grupo con lo que tengo en mano+display?
+    const avail=availableOf(pl,"c",c);
+    const projected=md.newSize+avail;                 // tamaño alcanzable de este grupo
+    const rivalG=bestRivalColorGroup(pl,c);
+    // ¿Es disputable? Solo si mi proyección puede alcanzar/superar al mejor rival.
+    const canWin = projected>=rivalG;
+    if(canWin){
+      // premia el potencial real que puedo alcanzar (no solo el delta inmediato)
+      colorVal += ((projected - md.newSize) * (mayRateInfo().win)) * 0.5 * mayW;
+    }else{
+      // mayoría fuera de alcance → devaluar fuertemente invertir en este color
+      colorVal *= 0.2;
+    }
+  }
+
+  let v=colorVal;
+  const target=activeFarol(pl);
+  // (a) Puntos de faroles AHORA: diferencia exacta de la puntuación real (cada farol
+  //     puntúa su grupo × su número; los sin cerrar cuentan por mayoría local).
+  const baseF=(pl._fsBase!==undefined)?pl._fsBase:farolesScore(pl).total;
+  cells[pos]={t:"card",c,b};
+  const afterF=farolesScore(pl).total;
+  // (b) Potencial de colonia: crecer el grupo grande de una especie aún LIBRE sirve para
+  //     anclar el farol III (×3). Las especies ya fijadas en un farol cerrado valen menos.
+  let newSize=1;{
+    const seenG=new Set([pos]);const stq=[pos];newSize=0;
+    while(stq.length){const cur=stq.pop();newSize++;
+      for(const m of nbs(cur)){const c2=cells[m];
+        if(c2&&c2.t==="card"&&c2.b===b&&!seenG.has(m)){seenG.add(m);stq.push(m);}}}
+  }
+  delete cells[pos];
+  let maxNb=0;{
+    const seenH=new Set();
+    for(const n0 of nbs(pos)){const c0=cells[n0];
+      if(c0&&c0.t==="card"&&c0.b===b&&!seenH.has(n0)){
+        let sz=0;const stq=[n0];seenH.add(n0);
+        while(stq.length){const cur=stq.pop();sz++;
+          for(const m of nbs(cur)){const c2=cells[m];
+            if(c2&&c2.t==="card"&&c2.b===b&&!seenH.has(m)){seenH.add(m);stq.push(m);}}}
+        if(sz>maxNb)maxNb=sz;}}
+  }
+  const usedBug=usedSpeciesClosed(pl).has(b);
+  const potW=usedBug?0.35:AI_POT_FREE;
+  v+=(afterF-baseF)*1.4;
+  v+=(newSize-maxNb)*potW;
+  // Calidad: valora también el potencial futuro del bicho (colmena que puede crecer)
+  if(isQuality)v+=availableOf(pl,"b",b)*0.3*potW;
+  // RESERVA para el farol III (×3): no regalar la colonia libre más grande a los faroles
+  // I y II plantando esa especie pegada a ellos (acabaría fijada ahí con multiplicador bajo).
+  if(AI_RESERVE>0&&pl.faroles.length<3){
+    let resBug=null,resSize=2;const seenR=new Set();
+    for(const k of Object.keys(cells)){const cc=cells[k];
+      if(!cc||cc.t!=="card"||seenR.has(k)||usedSpeciesClosed(pl).has(cc.b))continue;
+      let sz=0;const stq=[k];seenR.add(k);
+      while(stq.length){const cur=stq.pop();sz++;for(const m of nbs(cur)){const c2=cells[m];
+        if(c2&&c2.t==="card"&&c2.b===cc.b&&!seenR.has(m)){seenR.add(m);stq.push(m);}}}
+      if(sz>resSize){resSize=sz;resBug=cc.b;}}
+    if(resBug&&b===resBug){
+      for(let fi=pl.fichas.length;fi<Math.min(pl.faroles.length,2);fi++)
+        if(nbs(pl.faroles[fi]).includes(pos))v-=AI_RESERVE*Math.min(resSize,5)*0.5;
+    }
+  }
+  // Cerrar el farol activo rápido (carrera), como antes
+  if(target&&nbs(target).includes(pos))v+=speedW;
+  let occ=0;for(const n of nbs(pos))if(cells[n])occ++;
+  v+=occ*0.1;
+  return v;
+}
+const AI_POT_FREE=1.6;
+const AI_RESERVE=1.0;
+function evalCard(pl,card,st,speed){
+  if(card.t==="estanque")return evalEstanque(pl);
+  let best=null;
+  pl._fsBase=farolesScore(pl).total;
+  pl._usedC=usedSpeciesClosed(pl);
+  for(const pos of validPlantPos(pl.cells)){
+    const v=placeValue(pl,pos,card.c,card.b,st,speed);
+    if(!best||v>best.v)best={v,pos,c:card.c,b:card.b};
+  }
+  pl._fsBase=undefined;pl._usedC=undefined;
+  return best;
+}
+// La IA elige dónde plantar un Estanque: la casilla con más colores DISTINTOS
+// ya presentes alrededor (maximiza su puntuación de variedad).
+function evalEstanque(pl){
+  let best=null;
+  for(const pos of validEstanquePos(pl.cells)){
+    const colores=new Set();
+    for(const n of nbs(pos)){
+      const c=pl.cells[n];
+      if(c&&c.t==="card")colores.add(c.c);
+    }
+    const v=colores.size*2;
+    if(!best||v>best.v)best={v,pos,estanque:true};
+  }
+  return best;
+}
+function aiFarolPos(pl,speed){
+  let best=null;
+  const k=pl.faroles.length;                       // 1 → farol II, 2 → farol III
+  const used=usedSpeciesClosed(pl);
+  for(const pos of validFarolPos(pl.cells)){
+    const occ=nbs(pos).filter(n=>pl.cells[n]).length;
+    // especie más repetida alrededor del hueco; si ya puntuó, ese farol no puntuaría
+    const touch={};for(const n of nbs(pos)){const c=pl.cells[n];if(c&&c.t==="card")touch[c.b]=(touch[c.b]||0)+1;}
+    const mx=Math.max(0,...Object.values(touch));
+    let ptsHere=0;
+    if(mx>0){for(const b in touch)if(touch[b]===mx&&!used.has(b))ptsHere=Math.max(ptsHere,grupoFarol(pl.cells,pos,b)*(k+1));}
+    const v=ptsHere*2+(speed>0.5?occ*1.2:occ*0.4);
+    if(!best||v>best.v)best={pos,v};
+  }
+  return best?best.pos:null;
+}
+function aiTurn(){
+  const pl=S.players[S.cur];const logs=[];
+  const speed=pl.profile==="racer"?1.0:pl.profile==="quality"?0.0:0.5;
+  const EV_DECK=2.4;
+  if(!S.display.length && !S.deck.length){
+    logs.push({k:"info",x:`${pl.name} no hay cartas — pasa`});
+    S.passed=true;refillDisplay(logs);endTurn(logs);return;
+  }
+  // ── elige 2 cartas del display (solo extremos) o mazo y las planta ──
+  let planted=0,fromDisp=0,fromDeck=0;
+  for(let i=0;i<2;i++){
+    if(!S.display.length && !S.deck.length)break;
+    // evaluar solo los EXTREMOS del display
+    let bestDisp=null;
+    const extremes=[];
+    if(S.display.length>0)extremes.push({cd:S.display[0],idx:0});
+    if(S.display.length>1)extremes.push({cd:S.display[S.display.length-1],idx:S.display.length-1});
+    for(const ex of extremes){
+      const e=evalCard(pl,ex.cd,S,speed);
+      if(e&&(!bestDisp||e.v>bestDisp.e.v))bestDisp={cd:ex.cd,e,idx:ex.idx};
+    }
+    // decidir: display vs mazo
+    let chosen=null;
+    if(bestDisp&&(bestDisp.e.v>EV_DECK+0.3||!S.deck.length)){
+      S.display.splice(bestDisp.idx,1);
+      chosen=bestDisp.cd;fromDisp++;
+    }else if(S.deck.length){
+      const c=drawFromDeckRaw(logs);
+      if(c){chosen=c;fromDeck++;}
+    }else if(bestDisp){
+      S.display.splice(bestDisp.idx,1);
+      chosen=bestDisp.cd;fromDisp++;
+    }
+    if(!chosen)break;
+    const e=evalCard(pl,chosen,S,speed);
+    if(e){
+      if(chosen.t==="estanque"){
+        pl.cells[e.pos]={t:"estanque"};
+      }else{
+        pl.cells[e.pos]={t:"card",c:e.c,b:e.b};
+        checkColorToken(S.cur,e.c,logs);
+      }
+      planted++;
+      checkChainAuto(pl,S,logs,p=>aiFarolPos(p,speed));
+    }
+  }
+  let msg=`${pl.name} planta ${planted} (${fromDisp?fromDisp+" display":""}${fromDisp&&fromDeck?"+":""}${fromDeck?fromDeck+" mazo":""})`;
+  logs.push({k:"ai",x:msg});
+  // Al FINAL del turno: coloca el farol siguiente si cerró uno este turno
+  if(pl.pendingNextFarolLevel!=null){
+    const lv=pl.pendingNextFarolLevel;
+    const fp=aiFarolPos(pl,speed);
+    if(fp){pl.cells[fp]={t:"farol",lvl:lv+2};pl.faroles.push(fp);
+      logs.push({k:"ring",x:`🏮 ${pl.name} coloca su farol ${LVL_ROMAN[lv+1]} al final de su turno`});
+      triggerEndIfThird(pl,logs);}
+    pl.pendingNextFarolLevel=null;
+  }
+  refillDisplay(logs);
+  endTurn(logs);
+}
+function maybeAI(){
+  if(S.screen==="play"&&S.players[S.cur].isAI)
+    setTimeout(()=>{if(S.screen==="play"&&S.players[S.cur].isAI)aiTurn();},700);
+}
+
+/* ════════ MOTOR ════════ */
+const PROFILE_NAMES={racer:"Rápido",quality:"Calidad",mixed:"Mixto"};
+let S={screen:"setup",playerConfigs:[
+  {name:"Tú",type:"human",profile:null},
+  {name:"Gael",type:"ai",profile:"racer"},
+  {name:"Lara",type:"ai",profile:"quality"}
+],mayRate:"1y0",tokMode:"off",noHoles:true};
+
+function startGame(){
+  const np=S.playerConfigs.length;
+  S={screen:"play",playerConfigs:S.playerConfigs,mayRate:S.mayRate||"1y0",tokMode:S.tokMode||"on",noHoles:S.noHoles!==false,
+    deck:makeDeck(np),display:[],players:[],
+    claimed:[0,0,0],passed:false,passStreak:0,
+    endTriggered:false,endJust:false,endBy:null,endRounds:null,inFinalRound:false,
+    cur:0,turnNum:1,
+    phase:"pick",sel:new Set(),placed:[],viewTab:0,farolTent:null,
+    pickedCard:null,
+    colorTokens:{},   // {color: {owner, size}} — token de mayoría, se roba superando (no empatando)
+    log:[]};
+  for(let i=0;i<S.playerConfigs.length;i++){
+    const p=S.playerConfigs[i];
+    S.players.push({
+      name:(p.name&&p.name.trim())?p.name.trim():`Jugador ${i+1}`,
+      isAI:p.type==="ai",
+      profile:p.type==="ai"?(p.profile||"mixed"):null,
+      cells:{"0,0":{t:"farol",lvl:1}},faroles:["0,0"],fichas:[],
+      farolBug:[null,null,null],pendingBugFor:null,pendingTied:null,pendingNextFarolLevel:null});
+  }
+  for(let i=0;i<4;i++)if(S.deck.length)S.display.push(S.deck.shift());
+  S.log=[{k:"info",x:`Partida a ${np} jugadores · mazo de ${S.deck.length} cartas`}];
+  render();
+}
+function pushLog(arr){S.log=[...arr.reverse(),...S.log].slice(0,80);}
+
+function finishGame(logs){
+  S.players.forEach((p,i)=>{
+    const fs=farolesScore(p);
+    p.fPts=fs.total;p.fDetail=fs.detail;
+    p.fichasPts=p.fichas.reduce((a,b)=>a+b,0);
+    const es=estanqueScore(p,1);
+    p.estPts=es.total;p.estDetail=es.detail;
+    p.estPtsX2=estanqueScore(p,2).total;   // informativo: "y si fuera 2 pts/color"
+  });
+  S.screen="end";
+}
+function endTurn(logs){
+  const np=S.players.length;
+  const wasLast=S.cur===np-1;
+  if(S.passed){S.passStreak=(S.passStreak||0)+1;S.passed=false;}
+  else S.passStreak=0;
+  if(S.passStreak>=np){
+    logs.push({k:"info",x:"Nadie puede jugar — fin de partida"});
+    finishGame(logs);pushLog(logs);render();return;
+  }
+  if(S.endTriggered){
+    if(S.endBy==="mazo"){
+      // Fin por mazo: no hay de dónde reponer. Se completa la ronda actual y termina.
+      S.inFinalRound=true;   // los que quedan plantan su mano sin reponer
+      if(wasLast){finishGame(logs);pushLog(logs);render();return;}
+    }else{
+      // Fin por farol: se completa la ronda EN CURSO (normal), luego UNA ronda final sin reponer.
+      if(wasLast){
+        if(S.endRounds===null){S.endRounds=1;S.inFinalRound=true;}  // arranca la ronda final
+        else{
+          S.endRounds--;
+          if(S.endRounds<=0){finishGame(logs);pushLog(logs);render();return;}
+        }
+      }
+    }
+  }
+  const anyCards=S.deck.length>0 || S.display.length>0;
+  if(!anyCards){
+    finishGame(logs);pushLog(logs);render();return;
+  }
+  S.cur=(S.cur+1)%np;S.turnNum++;S.viewTab=S.cur;
+  S.phase=S.players[S.cur].isAI?null:"pick";
+  S.placed=[];S.midPlant=false;S.pickedCard=null;
+  pushLog(logs);render();
+  maybeAI();
+}
+
+/* ════════ ACCIONES HUMANAS ════════ */
+function selHand(i){
+  // ya no hay mano — función obsoleta
+}
+/* ═══ FLUJO HUMANO: pick (elige carta del display/mazo) → place (colócala) → repite 2 veces ═══ */
+// El humano elige una carta del display
+function pickFromDisplay(i){
+  if(S.phase!=="pick")return;
+  // Solo se puede coger de los EXTREMOS: posición 0 (izquierda) o última (derecha)
+  if(i!==0 && i!==S.display.length-1)return;
+  const cd=S.display[i];
+  if(!cd)return;
+  S.display.splice(i,1);
+  S.pickedCard=cd;
+  S.phase="place";
+  S.viewTab=S.cur;   // asegura que se vea TU jardín al colocar, aunque estuvieras mirando el de otro
+  render();
+}
+// El humano elige robar del mazo (a ciegas)
+function pickFromDeck(){
+  if(S.phase!=="pick")return;
+  if(!S.deck.length)return;
+  const logs=[];
+  const c=drawFromDeckRaw(logs);
+  if(!c){pushLog(logs);return;}
+  S.pickedCard=c;
+  S.phase="place";
+  S.viewTab=S.cur;   // asegura que se vea TU jardín al colocar, aunque estuvieras mirando el de otro
+  pushLog(logs);render();
+}
+// El humano coloca la carta pickedCard en el tablero
+function placeAt(k){
+  const pl=S.players[S.cur];
+  if(S.phase==="placeFarol"){
+    // colocación de farol (cadena)
+    {const tmp={...pl.cells};if(S.farolTent)delete tmp[S.farolTent];
+     if(!validFarolPos(tmp).includes(k))return;}
+    if(S.farolTent)delete pl.cells[S.farolTent];
+    pl.cells[k]={t:"farol",lvl:pl.faroles.length+1};S.farolTent=k;render();return;
+  }
+  if(S.phase!=="place"||!S.pickedCard)return;
+  if(S.placed.length>=2)return;
+  const card=S.pickedCard;
+  const isEstanque=card.t==="estanque";
+  // regla: no dejar un hueco vacío completamente rodeado
+  if(S.noHoles && !plantLeavesNoHole(pl.cells,k))return;
+  if(isEstanque){
+    if(!validEstanquePos(pl.cells).includes(k))return;   // no junto a otro estanque
+    pl.cells[k]={t:"estanque"};
+  }else{
+    if(!validPlantPos(pl.cells).includes(k))return;
+    pl.cells[k]={t:"card",c:card.c,b:card.b};
+  }
+  S.placed.push({k,card});
+  S.pickedCard=null;
+  const logs=[];
+  if(!isEstanque)checkColorToken(S.cur,card.c,logs);
+  // ¿Esta carta ha rodeado un farol? → desempate si hace falta, o colocar el siguiente al instante
+  const step=checkChainAuto(pl,S,logs,null);
+  // ¿Faltan cartas del turno (2)?
+  if(S.placed.length<2 && (S.display.length>0 || S.deck.length)){
+    S.phase="pick";   // vuelve a elegir la 2ª carta
+    pushLog(logs);render();return;
+  }
+  finishTurn(logs);
+}
+// Cierre de turno: si cerraste un farol este turno, colocas el siguiente AHORA (al final);
+// después se repone el display y pasa el turno.
+function finishTurn(logs){
+  const pl=S.players[S.cur];
+  const planted=S.placed.length;S.placed=[];S.midPlant=false;
+  if(planted)logs.push({k:"ai",x:`Plantas ${planted} carta${planted>1?"s":""}`});
+  if(pl.pendingNextFarolLevel!=null&&!pl.isAI){
+    S.phase="placeFarol";S.farolTent=null;S.viewTab=S.cur;
+    pushLog(logs);render();return;
+  }
+  refillDisplay(logs);endTurn(logs);
+}
+function undoPlace(){
+  if(!S.placed.length)return;
+  const pl=S.players[S.cur];const last=S.placed.pop();
+  delete pl.cells[last.k];
+  // devolver la carta al display (o perderla si era del mazo → la ponemos de vuelta al display por simplicidad)
+  S.display.push(last.card);
+  S.pickedCard=null;
+  S.phase="pick";
+  render();
+}
+function confirmFarol(){
+  if(!S.farolTent)return;
+  const pl=S.players[S.cur];
+  pl.faroles.push(S.farolTent);S.farolTent=null;
+  pl.pendingNextFarolLevel=null;   // ya coloqué el farol pendiente: dejar de pedirlo de nuevo
+  const logs=[{k:"ring",x:`🏮 Colocas tu farol ${LVL_ROMAN[pl.faroles.length-1]}`}];
+  triggerEndIfThird(pl,logs);
+  // El farol nuevo nace con al menos 1 vecino libre, así que no puede cerrarse al colocarlo.
+  refillDisplay(logs);endTurn(logs);
+}
+// Continúa el turno tras una pausa en mitad de la cadena
+function resumeAfterChain(logs){
+  if(S.midPlant && S.placed.length<2 && (S.display.length>0 || S.deck.length)){
+    S.midPlant=false;S.phase="pick";pushLog(logs);render();return;
+  }
+  finishTurn(logs);
+}
+function undoFarol(){
+  if(S.farolTent){delete S.players[S.cur].cells[S.farolTent];S.farolTent=null;}
+  render();
+}
+function passTurn(){
+  S.passed=true;
+  const logs=[{k:"info",x:"Pasas"}];
+  refillDisplay(logs);
+  endTurn(logs);
+}
+
+/* ════════ SVG ════════ */
+function bugSvg(b,s){
+  const o=`width="${s}" height="${s}" viewBox="0 0 24 24"`;
+  if(b==="mariposa")return`<svg ${o}><ellipse cx="8" cy="9" rx="5" ry="6" fill="${INK}" opacity=".9"/><ellipse cx="16" cy="9" rx="5" ry="6" fill="${INK}" opacity=".9"/><ellipse cx="8.5" cy="17" rx="3.4" ry="4" fill="${INK}" opacity=".7"/><ellipse cx="15.5" cy="17" rx="3.4" ry="4" fill="${INK}" opacity=".7"/><rect x="11.2" y="6" width="1.6" height="13" rx=".8" fill="${INK}"/></svg>`;
+  if(b==="mariquita")return`<svg ${o}><circle cx="12" cy="13" r="8" fill="${INK}" opacity=".85"/><circle cx="12" cy="5.5" r="3" fill="${INK}"/><line x1="12" y1="6" x2="12" y2="21" stroke="#F4EDDC" stroke-width="1.4"/><circle cx="8.5" cy="11" r="1.5" fill="#F4EDDC"/><circle cx="15.5" cy="11" r="1.5" fill="#F4EDDC"/><circle cx="8.5" cy="16" r="1.5" fill="#F4EDDC"/><circle cx="15.5" cy="16" r="1.5" fill="#F4EDDC"/></svg>`;
+  if(b==="luciernaga")return`<svg ${o}><ellipse cx="12" cy="10" rx="3.4" ry="5" fill="${INK}"/><circle cx="12" cy="17.5" r="3.6" fill="#E8C45A"/><line x1="12" y1="22.5" x2="12" y2="23.6" stroke="#E8C45A" stroke-width="1.3" stroke-linecap="round"/><line x1="7.5" y1="20.5" x2="6.6" y2="21.4" stroke="#E8C45A" stroke-width="1.3" stroke-linecap="round"/><line x1="16.5" y1="20.5" x2="17.4" y2="21.4" stroke="#E8C45A" stroke-width="1.3" stroke-linecap="round"/><line x1="9.5" y1="6" x2="7.8" y2="3.6" stroke="${INK}" stroke-width="1.1"/><line x1="14.5" y1="6" x2="16.2" y2="3.6" stroke="${INK}" stroke-width="1.1"/></svg>`;
+  if(b==="abeja")return`<svg ${o}><ellipse cx="12" cy="13" rx="5.5" ry="7" fill="${INK}" opacity=".9"/><rect x="6.5" y="11" width="11" height="2" fill="#F4EDDC"/><rect x="6.8" y="15" width="10.4" height="2" fill="#F4EDDC"/><ellipse cx="6" cy="8" rx="4" ry="2.4" fill="${INK}" opacity=".35" transform="rotate(-25 6 8)"/><ellipse cx="18" cy="8" rx="4" ry="2.4" fill="${INK}" opacity=".35" transform="rotate(25 18 8)"/></svg>`;
+  return`<svg ${o}><rect x="11.2" y="4" width="1.6" height="17" rx=".8" fill="${INK}"/><circle cx="12" cy="4.5" r="2" fill="${INK}"/><ellipse cx="6.5" cy="9" rx="5" ry="1.8" fill="${INK}" opacity=".5"/><ellipse cx="17.5" cy="9" rx="5" ry="1.8" fill="${INK}" opacity=".5"/><ellipse cx="7" cy="12.5" rx="4.4" ry="1.6" fill="${INK}" opacity=".35"/><ellipse cx="17" cy="12.5" rx="4.4" ry="1.6" fill="${INK}" opacity=".35"/></svg>`;
+}
+function farolSvg(s){return`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><circle cx="12" cy="10" r="9" fill="#E8C45A" opacity=".18"/><rect x="10.6" y="2.5" width="2.8" height="1.6" rx=".6" fill="#E8C45A"/><path d="M6.5 6.5 L17.5 6.5 L15.8 4.6 L8.2 4.6 Z" fill="#E8C45A"/><rect x="8.6" y="7.2" width="6.8" height="6" rx="1" fill="#F7E6AE" stroke="#E8C45A" stroke-width="1.2"/><rect x="10.9" y="13.8" width="2.2" height="4.6" fill="#E8C45A"/><rect x="8.4" y="18.6" width="7.2" height="2" rx=".8" fill="#E8C45A"/></svg>`;}
+// Token de ornamento (mayoría de color): icono con fondo del color, glifo simple por color
+function ornamentSvg(color,s){
+  const bg=COLORS[color].hex;
+  let glyph="";
+  if(color==="azul") glyph=`<path d="M4 13 Q8 9 12 13 T20 13" fill="none" stroke="#fff" stroke-width="1.8"/><path d="M6 16.5 Q9 14 12 16.5 T18 16.5" fill="none" stroke="#fff" stroke-width="1.4" opacity=".85"/>`;
+  else if(color==="rojo") glyph=`<rect x="7" y="5" width="1.8" height="14" fill="#fff"/><rect x="15.2" y="5" width="1.8" height="14" fill="#fff"/><rect x="5.5" y="5" width="13" height="2.2" fill="#fff"/>`;
+  else if(color==="verde") glyph=`<rect x="7.2" y="4" width="1.7" height="16" fill="#fff"/><rect x="11.2" y="4" width="1.7" height="16" fill="#fff"/><rect x="15.2" y="4" width="1.7" height="16" fill="#fff"/>`;
+  else if(color==="dorado") glyph=`<ellipse cx="9" cy="7" rx="3" ry="2" fill="#fff"/><ellipse cx="15" cy="10.5" rx="3.2" ry="2" fill="#fff"/><ellipse cx="9" cy="14" rx="3" ry="2" fill="#fff"/><ellipse cx="14" cy="17.5" rx="2.6" ry="1.8" fill="#fff"/>`;
+  else if(color==="violeta"){
+    glyph="";
+    const pts=[[12,7],[16.5,10],[15,15],[9,15],[7.5,10]];
+    for(const[px,py] of pts)glyph+=`<circle cx="${px}" cy="${py}" r="2.4" fill="#fff"/>`;
+    glyph+=`<circle cx="12" cy="11.3" r="1.6" fill="#fff"/>`;
+  }
+  return`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" rx="5" fill="${bg}"/>${glyph}</svg>`;
+}
+
+function estanqueSvg(s){
+  return`<svg width="${s}" height="${s}" viewBox="0 0 24 24">
+    <ellipse cx="12" cy="12" rx="10" ry="7" fill="#EAF2FF" opacity=".9"/>
+    <path d="M4 13 Q8 9.5 12 13 T20 13" fill="none" stroke="#3B7DD8" stroke-width="1.3"/>
+    <path d="M6 16 Q9 14 12 16 T18 16" fill="none" stroke="#3B7DD8" stroke-width="1.0" opacity=".85"/>
+    <circle cx="8.5" cy="10" r="2.6" fill="#4E9A57"/>
+    <circle cx="16" cy="9" r="2" fill="#4E9A57"/>
+  </svg>`;
+}
+function cardHtml(card,w,h,glowCls,act){
+  w=w||CW;h=h||CH;
+  if(!card)return`<div style="width:${w}px;height:${h}px"></div>`;
+  const g=glowCls||"";
+  if(card.t==="estanque"){
+    return`<div class="cardq ${g} ${act?"clickable":""}" ${act?`data-act="${act}"`:""} title="Estanque" style="width:${w}px;height:${h}px;background:${COLORS.azul.hex}"><div class="inner">${estanqueSvg(w*0.6)}</div></div>`;
+  }
+  return`<div class="cardq ${g} ${act?"clickable":""}" ${act?`data-act="${act}"`:""} title="${BUGS[card.b]} · ${COLORS[card.c].n}" style="width:${w}px;height:${h}px;background:${COLORS[card.c].hex}"><div class="inner">${bugSvg(card.b,w*0.55)}</div></div>`;
+}
+function cellXY(k){const[q,r]=pK(k);return{x:(q+r/2)*GX,y:r*GY};}
+function boardHtml(p,highlight,height,tent){
+  const keys=Object.keys(p.cells);const hl=highlight||[];const tset=new Set(tent||[]);
+  let minX=0,minY=0,maxX=0,maxY=0;
+  [...keys,...hl].forEach(k=>{const{x,y}=cellXY(k);
+    minX=Math.min(minX,x);minY=Math.min(minY,y);maxX=Math.max(maxX,x+CW);maxY=Math.max(maxY,y+CH);});
+  const pad=22,bw=maxX-minX+pad*2,bh=maxY-minY+pad*2;
+  let cellsH="";
+  for(const k of keys){
+    const{x,y}=cellXY(k);const c=p.cells[k];let inner;
+    if(c.t==="farol"){
+      const lc=LVL_COLORS[(c.lvl||1)-1];
+      inner=`<div style="width:100%;height:100%;border-radius:8px;background:#332E22;border:3px solid ${lc};display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 12px ${lc}55">
+        ${farolSvg(CW*0.52)}<span style="font-size:10px;font-weight:800;color:${lc}">${LVL_ROMAN[(c.lvl||1)-1]}</span></div>`;
+    }
+    else inner=cardHtml(c);
+    const ts=tset.has(k)?"outline:3px dashed #E8C45A;outline-offset:2px;border-radius:8px;":"";
+    cellsH+=`<div class="cell" style="left:${x}px;top:${y}px;width:${CW}px;height:${CH}px;${ts}">${inner}</div>`;
+  }
+  for(const k of hl){
+    const{x,y}=cellXY(k);
+    cellsH+=`<div class="hl" data-place="${k}" style="left:${x}px;top:${y}px;width:${CW}px;height:${CH}px"></div>`;
+  }
+  return`<div class="boardscroll" style="width:100%;height:${height}px">
+    <div class="boardsizer" data-bw="${bw}" data-bh="${bh}" style="position:relative;width:100%;height:100%">
+      <div class="boardscale" style="position:absolute;width:${bw}px;height:${bh}px">
+        <div style="position:absolute;left:${pad-minX}px;top:${pad-minY}px">${cellsH}</div></div></div></div>`;
+}
+function playerTokensHtml(playerIdx){
+  const owned=CIDS.filter(c=>S.colorTokens[c]&&S.colorTokens[c].owner===playerIdx);
+  if(!owned.length)return"";
+  return`<span style="display:inline-flex;gap:2px;vertical-align:middle;margin-left:3px">${owned.map(c=>ornamentSvg(c,13)).join("")}</span>`;
+}
+function pilesHtml(){
+  let h='<div style="display:flex;gap:6px">';
+  for(let lvl=0;lvl<3;lvl++){
+    const next=S.claimed[lvl];
+    const pile=PILES[lvl];
+    const chip=next<pile.length
+      ?`<div class="pilechip" style="background:${LVL_COLORS[lvl]}">${pile[next]}</div>`
+      :`<div class="pilechip" style="background:#2C3850;color:#5E6880">—</div>`;
+    const rest=pile.slice(next+1).join("·")||"agotado";
+    h+=`<div class="pilebox">${chip}<div class="pilelab">Farol ${LVL_ROMAN[lvl]}</div><div class="pilerest">quedan: ${rest}</div></div>`;
+  }
+  return h+"</div>";
+}
+function mayoriasHtml(){
+  let rows="";
+  for(const c of CIDS){
+    const tok=S.colorTokens[c];
+    const cells=S.players.map((p,i)=>{
+      const g=maxGroupOf(p.cells,"c",c);
+      const owns=tok&&tok.owner===i;
+      const style=owns?`color:var(--ink);font-weight:700`:`color:var(--dim)`;
+      return`<td style="text-align:right;padding:3px 6px;${style}">${g||"·"}${owns?` ${ornamentSvg(c,14)}`:""}</td>`;
+    }).join("");
+    rows+=`<tr><td style="padding:3px 6px">${ornamentSvg(c,16)} ${COLORS[c].n}</td>${cells}</tr>`;
+  }
+  const heads=S.players.map(p=>`<th style="padding:3px 6px;font-size:10px">${p.name}</th>`).join("");
+  return`<table style="font-size:11px"><tr><th style="padding:3px 6px;font-size:10px">Color</th>${heads}</tr>${rows}</table>
+    <div class="hint">Al llegar a 3+ del mismo color te llevas su token. Solo te lo pueden robar si te SUPERAN (empatar no basta). Al final, quien posea el token cobra ${mayRateInfo().win} pto${mayRateInfo().win>1?"s":""}/carta de ese grupo.</div>`;
+}
+
+/* ════════ RENDER ════════ */
+function render(){
+  const app=document.getElementById("app");
+
+  if(S.screen==="setup"){
+    app.innerHTML=`
+      <div style="max-width:640px;margin:0 auto;padding-top:44px">
+        <h1 style="font-size:32px">KURA <span style="color:var(--gold)">·</span> Mahjong Nueva 10 <span style="font-size:14px;color:var(--muted)">cada farol puntúa la especie más repetida a su alrededor y todo lo conectado, × su número</span></h1>
+        <p style="color:var(--muted);line-height:1.65;font-size:14px">
+          Empiezas con tu <b style="color:#8FD0DC">farol I</b> y una <b style="color:var(--ink)">mano de 3 cartas</b>.<br><br>
+          <b style="color:var(--gold)">Tu turno:</b> plantas <b>3 cartas</b> en tu jardín (obligatorio, no se guardan) y repones a 3 robando <b>del display visible y/o del mazo</b>, a tu elección, carta a carta.<br>
+          El display siempre vuelve a 3 al final de cada turno.<br><br>
+          <b style="color:var(--gold)">🏮 La cadena:</b> en cuanto rodeas un farol (sus 6 vecinos ocupados), <b>colocas el siguiente farol al instante</b>, antes de seguir plantando: rodea tu farol <b style="color:#8FD0DC">I</b> → token del nivel I (5/3/2/1) + colocas el farol <b style="color:#E8C45A">II</b>. Rodéalo → token II (7/5/3/2) + farol <b style="color:#E8965A">III</b>. Rodéalo → token III (9/7/5/3). Puedes encadenar varios faroles en un mismo turno.<br><br>
+          <b>Puntuación final:</b><br>
+          · <b>Bichos (colmena):</b> cada farol cobra por un bicho que lo toca, contando <b>todo el grupo conexo continuo</b> de ese bicho (aunque se aleje del farol, mientras la cadena no se rompa). <b>Cada especie solo la cobra un farol.</b> Conviene una colmena continua por farol, cada una de una especie distinta.<br>
+          · <b>Tokens</b> de la carrera.<br>
+          · <b>Ornamentos de color:</b> en cuanto tu grupo conexo de un color llega a <b>3 o más</b> cartas, te llevas el token de ese ornamento. Otro jugador solo te lo puede robar si <b>supera</b> tu tamaño — empatar no basta. Al final de la partida, quien posea cada token cobra sus puntos (2 por carta, o 1 por carta según el modo elegido).<br><br>
+          Fin de partida (lo que ocurra primero): <b>(1)</b> cuando un jugador <b>coloca su farol III</b>, se completa la ronda en curso y se juega <b>una ronda final</b> sin robar. <b>(2)</b> cuando se <b>agota el mazo de robo</b>, se completa la ronda actual hasta el último jugador (sin robar) y termina, sin ronda final extra. Al dispararse cualquiera de los dos, ya no se repone la mano del mazo.<br>
+          Mazo único de <b>75 cartas</b> (3 copias de cada combinación) para cualquier número de jugadores.
+        </p>
+        <div style="margin:24px 0">
+          <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Jugadores</div>
+          <div style="display:flex;gap:10px">
+            ${[2,3,4].map(n=>`<button class="btn ${S.playerConfigs.length===n?"gold":""}" data-npl="${n}" style="min-width:90px">${n}</button>`).join("")}
+          </div>
+        </div>
+        <div style="margin:24px 0">
+          <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Nombres y tipo</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            ${S.playerConfigs.map((p,i)=>`
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <input type="text" value="${p.name}" data-pname="${i}" placeholder="Jugador ${i+1}"
+                  style="flex:1 1 140px;min-width:110px;background:#12161f;border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--ink);font-size:13px;font-family:inherit">
+                <div style="display:flex;gap:4px">
+                  <button class="tab ${p.type==="human"?"active":""}" data-ptype="${i}:human">Humano</button>
+                  <button class="tab ${p.type==="ai"?"active":""}" data-ptype="${i}:ai">IA</button>
+                </div>
+                ${p.type==="ai"?`<div style="display:flex;gap:4px">
+                  ${["racer","quality","mixed"].map(pr=>`<button class="tab ${p.profile===pr?"active":""}" data-pprof="${i}:${pr}">${PROFILE_NAMES[pr]}</button>`).join("")}
+                </div>`:''}
+              </div>`).join("")}
+          </div>
+        </div>
+        <div style="margin:24px 0;border-top:1px solid var(--border);padding-top:20px">
+          <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Puntuación de ornamentos de color</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+            ${Object.entries(MAY_RATES).map(([k,n])=>`<button class="tab ${(S.mayRate||"2y1")===k?"active":""}" data-setrate="${k}">${n}</button>`).join("")}
+          </div>
+          <div style="color:var(--dim);font-size:11px;margin-bottom:16px">Al llegar a 3+ cartas del mismo color te llevas su token. Solo te lo roban si te superan — empatar no basta.</div>
+          <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Tokens de la carrera de faroles</div>
+          <div style="display:flex;gap:6px;margin-bottom:16px">
+            <button class="tab ${S.tokMode==="off"?"active":""}" data-settok="off">No cuentan (base)</button>
+            <button class="tab ${S.tokMode==="on"?"active":""}" data-settok="on">Sí cuentan (módulo)</button>
+          </div>
+          <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Regla de faroles</div>
+          <div style="display:flex;gap:6px">
+            <button class="tab ${!S.noHoles?"active":""}" data-setholes="off">Libre</button>
+            <button class="tab ${S.noHoles?"active":""}" data-setholes="on">Sin huecos internos</button>
+          </div>
+          <div style="color:var(--dim);font-size:11px;margin-top:6px">"Sin huecos": el farol debe colocarse con al menos un vecino libre, y no puedes dejar una casilla vacía rodeada por completo. Evita preparar nidos y cerrar faroles de golpe.</div>
+        </div>
+        <button class="btn gold" data-start="1" style="font-size:16px;padding:12px 28px">Empezar partida</button>
+      </div>`;
+    const DEFAULT_NAMES=["Tú","Gael","Lara","Miri"];
+    app.querySelectorAll("[data-npl]").forEach(b=>b.onclick=()=>{
+      const n=+b.dataset.npl;
+      while(S.playerConfigs.length<n){
+        const i=S.playerConfigs.length;
+        S.playerConfigs.push({name:DEFAULT_NAMES[i]||`Jugador ${i+1}`,type:"ai",profile:"mixed"});
+      }
+      while(S.playerConfigs.length>n)S.playerConfigs.pop();
+      render();
+    });
+    app.querySelectorAll("[data-pname]").forEach(el=>{
+      el.oninput=()=>{S.playerConfigs[+el.dataset.pname].name=el.value;};
+    });
+    app.querySelectorAll("[data-ptype]").forEach(b=>b.onclick=()=>{
+      const[idx,type]=b.dataset.ptype.split(":");
+      S.playerConfigs[+idx]={...S.playerConfigs[+idx],type};
+      if(type==="ai"&&!S.playerConfigs[+idx].profile)S.playerConfigs[+idx].profile="mixed";
+      render();
+    });
+    app.querySelectorAll("[data-pprof]").forEach(b=>b.onclick=()=>{
+      const[idx,pr]=b.dataset.pprof.split(":");
+      S.playerConfigs[+idx].profile=pr;render();
+    });
+    app.querySelectorAll("[data-setrate]").forEach(b=>b.onclick=()=>{S.mayRate=b.dataset.setrate;render();});
+    app.querySelectorAll("[data-settok]").forEach(b=>b.onclick=()=>{S.tokMode=b.dataset.settok;render();});
+    app.querySelectorAll("[data-setholes]").forEach(b=>b.onclick=()=>{S.noHoles=b.dataset.setholes==="on";render();});
+    app.querySelector("[data-start]").onclick=startGame;
+    return;
+  }
+
+  if(S.screen==="end"){
+    const may=colorTokenScore(S.players);
+    const tokOn=S.tokMode!=="off";
+    S.players.forEach((p,i)=>{
+      p.mayPts=may.res[i];p.mayDetail=may.detail[i];
+      p.total=p.fPts+(tokOn?p.fichasPts:0)+p.mayPts+(p.estPts||0);
+    });
+    const ranked=[...S.players].sort((a,b)=>b.total-a.total);
+    app.innerHTML=`
+      <h1 style="font-size:28px">Fin de partida</h1>
+      <div class="panel" style="margin-bottom:20px">
+        <div class="ptitle">Ornamentos — cambia para comparar</div>
+        ${mayRateToggle()}
+        <div class="ptitle" style="margin-top:6px">Tokens de la carrera</div>
+        ${tokModeToggle()}
+        <table>
+          <tr><th>Jugador</th><th>Faroles (bichos)</th><th>Tokens 🏅</th><th>Ornamentos color</th><th>Total</th></tr>
+          ${ranked.map((p,i)=>`<tr class="${i===0?"winner":""}">
+            <td>${i===0?"🏆 ":""}${p.name}${p.profile?` <span style="color:var(--dim);font-weight:400">(${PROFILE_NAMES[p.profile]||p.profile})</span>`:""}</td>
+            <td>${p.fPts}${p.fDetail?` <span style="color:var(--dim);font-size:10px">(${p.fDetail.filter(d=>d.bug).map(d=>BUGS[d.bug]+" "+d.count+"×"+d.mult+" = "+d.pts+(d.prov?" (sin cerrar)":"")).join(", ")||"—"})</span>`:""}</td><td style="${tokOn?"":"opacity:.35;text-decoration:line-through"}">${p.fichasPts} (${p.fichas.join("+")||"—"})</td>
+            <td>${p.mayPts} ${Object.keys(p.mayDetail).length?`<span style="color:var(--dim);font-size:10px">(${Object.entries(p.mayDetail).map(([c,v])=>COLORS[c].n+" grupo "+v.g+"→"+v.pts).join(", ")})</span>`:""}</td>
+            <td style="font-weight:700;color:var(--gold)">${p.total}</td></tr>`).join("")}
+        </table>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        ${S.players.map((p,i)=>`<button class="tab ${S.viewTab===i?"active":""}" data-tab="${i}">${p.name}</button>`).join("")}
+        <button class="btn" data-new="1" style="margin-left:auto">Nueva partida</button>
+      </div>
+      <div class="boardwrap">${boardHtml(S.players[S.viewTab],[],420)}</div>`;
+    app.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.viewTab=+b.dataset.tab;render();});
+    app.querySelectorAll("[data-setrate]").forEach(b=>b.onclick=()=>{S.mayRate=b.dataset.setrate;render();});
+    app.querySelectorAll("[data-tokmode]").forEach(b=>b.onclick=()=>{S.tokMode=b.dataset.tokmode;render();});
+    app.querySelector("[data-new]").onclick=()=>{S={screen:"setup",playerConfigs:S.playerConfigs,mayRate:S.mayRate,tokMode:S.tokMode,noHoles:S.noHoles};render();};
+    fitBoards();return;
+  }
+
+  const curP=S.players[S.cur],myTurn=!curP.isAI;const me=curP;
+  const viewing=S.players[S.viewTab];
+  let highlight=[];
+  if(myTurn&&S.viewTab===S.cur){
+    if(S.phase==="place"&&S.pickedCard&&S.placed.length<2)highlight=validPlantPos(me.cells);
+    else if(S.phase==="placeFarol"){
+      const tmp={...me.cells};if(S.farolTent)delete tmp[S.farolTent];
+      highlight=validFarolPos(tmp).filter(k=>k!==S.farolTent);
+    }
+  }
+  const tentKeys=[...S.placed.map(o=>o.k),...(S.farolTent?[S.farolTent]:[])];
+
+  const scoreboard=S.players.map((pl,i)=>{
+    const may=colorTokenScore(S.players);
+    return`<div class="score-row"><span>${pl.name} ${pl.faroles.map((f,j)=>`<span style="color:${LVL_COLORS[j]}">🏮</span>`).join("")}${playerTokensHtml(i)}</span>
+      <span style="color:var(--muted)">bichos ${farolesPts(pl)} · <span style="${S.tokMode==="off"?"opacity:.35;text-decoration:line-through":""}">🏅${pl.fichas.reduce((a,b)=>a+b,0)}</span> · ornamentos <b style="color:var(--ink)">${may.res[i]}</b></span></div>`;
+  }).join("");
+
+  // Display: 4 cartas en fila, solo los EXTREMOS son clicables en fase "pick"
+  const dispH=S.display.length?S.display.map((cd,i)=>{
+    const isExtreme=(i===0 || i===S.display.length-1);
+    const clickable=(myTurn&&S.phase==="pick"&&isExtreme)?"disp-"+i:null;
+    const glow=(myTurn&&S.phase==="pick"&&isExtreme)?"glows":"";
+    const dim=(myTurn&&S.phase==="pick"&&!isExtreme)?"opacity:0.5;":"";
+    return`<div style="position:relative;${dim}">${cardHtml(cd,CW,CH,glow,clickable)}${!isExtreme&&myTurn&&S.phase==="pick"?'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);pointer-events:none">🔒</div>':''}</div>`;
+  }).join('<div style="width:2px;background:var(--border);align-self:stretch;margin:0 1px"></div>'):'<span style="color:var(--dim);font-size:12px">vacío</span>';
+
+  // Carta elegida (en tránsito, lista para colocar)
+  const pickedH=S.pickedCard?`<div style="display:flex;align-items:center;gap:8px">
+    <span style="color:var(--gold);font-size:13px">Carta elegida →</span>${cardHtml(S.pickedCard,CW,CH,"glow")}
+    <span style="color:var(--muted);font-size:12px">Clic en un hueco del jardín para colocarla</span></div>`:"";
+
+  let actionPanel="";
+  if(myTurn){
+    if(S.phase==="pick"){
+      actionPanel=`<div class="panel"><div class="ptitle">🎴 Elige una carta (${S.placed.length+1}/2)</div>
+        <div style="color:var(--muted);font-size:12px;text-align:center;margin-bottom:6px">
+          Clic en una carta del display o roba a ciegas del mazo.</div>
+        <div style="display:flex;gap:8px;margin-top:12px;justify-content:center">
+          <button class="btn gold" data-pickdeck="1" ${S.deck.length===0?"disabled":""}>🂠 Robar del mazo (${S.deck.length})</button>
+        </div>
+        ${S.placed.length?'<div style="display:flex;gap:8px;margin-top:8px;justify-content:center"><button class="btn" data-undo="1">↩ Deshacer última</button></div>':''}
+      </div>`;
+    }else if(S.phase==="place"){
+      actionPanel=`<div class="panel"><div class="ptitle">🌱 Coloca la carta en tu jardín</div>
+        <div style="color:var(--muted);font-size:12px;text-align:center;margin-bottom:6px">
+          Clic en un hueco resaltado de tu jardín.</div>
+        ${pickedH}
+      </div>`;
+    }else if(S.phase==="placeFarol"){
+      const nf=me.faroles.length;
+      actionPanel=`<div class="panel"><div class="ptitle">🏮 Final de turno: coloca tu farol ${LVL_ROMAN[nf]}</div>
+        <div style="color:var(--muted);font-size:12px;text-align:center">${S.farolTent?"Colocado · clic en otro hueco para moverlo":"Clic en un hueco de tu jardín"}</div>
+        <div style="display:flex;gap:8px;margin-top:12px;justify-content:center">
+          ${S.farolTent?'<button class="btn" data-undofarol="1">↩ Quitar</button><button class="btn gold" data-confirmfarol="1">✓ Confirmar</button>':''}
+        </div></div>`;
+    }
+  }
+
+  app.innerHTML=`
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:12px;flex-wrap:wrap">
+      <h1 style="font-size:24px;margin:0">KURA <span style="color:var(--gold)">·</span> Mahjong Nueva 10</h1>
+      <span style="color:var(--muted);font-size:13px">Mazo: ${S.deck.length} · Turno ${S.turnNum}${S.inFinalRound?' · <b style="color:var(--gold)">🌅 ronda final</b>':S.endTriggered?' · <b style="color:var(--gold)">🌅 fin anunciado</b>':''}</span>
+      <span style="margin-left:auto;font-size:14px;font-weight:600;color:${myTurn?"var(--gold)":"var(--muted)"}">${myTurn?"● Tu turno":"● Turno de "+curP.name+"…"}</span>
+      <button class="btn" data-restart="1" style="font-size:12px;padding:6px 12px">↺ Nueva partida</button>
+    </div>
+    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+      <div style="flex:1 1 600px;min-width:300px">
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+          ${S.players.map((p,i)=>`<button class="tab ${S.viewTab===i?"active":""} ${S.cur===i?"turn":""}" data-tab="${i}" style="display:flex;flex-direction:column;align-items:center;line-height:1.2;padding-top:6px;padding-bottom:6px"><span>${p.name} ${p.faroles.map((f,j)=>`<span style="color:${LVL_COLORS[j]}">🏮</span>`).join("")}${playerTokensHtml(i)}</span>${p.profile?`<span style="font-size:9px;color:var(--dim);font-weight:400">${PROFILE_NAMES[p.profile]}</span>`:""}</button>`).join("")}
+        </div>
+        <div class="boardwrap">
+          ${S.phase==="placeFarol"&&S.viewTab===S.cur?'<div class="banner">🏮 Coloca tu farol</div>':""}
+          ${boardHtml(viewing,highlight,400,S.viewTab===S.cur?tentKeys:[])}
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+          <div class="panel" style="flex:1 1 200px">
+            <div class="ptitle">Display (${S.display.length}/4)</div>
+            <div class="zone">${dispH}</div>
+          </div>
+        </div>
+        ${actionPanel}
+        <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+          ${S.players.map((p,i)=>i===S.viewTab?"":`<div class="miniwrap ${S.cur===i?"myturn":""}" data-tab="${i}" title="Ver ${p.name}"><div class="minihead">${S.cur===i?"● ":""}${p.name} ${p.faroles.map((f,j)=>`<span style="color:${LVL_COLORS[j]}">🏮</span>`).join("")}${playerTokensHtml(i)}${p.profile?`<span class="miniprofile"> · ${PROFILE_NAMES[p.profile]}</span>`:""}</div>${boardHtml(p,[],130)}</div>`).join("")}
+        </div>
+        <div class="panel" style="margin-top:12px">
+          <div class="ptitle">Ornamentos de color (en vivo)</div>
+          ${mayRateToggle()}
+          ${mayoriasHtml()}
+        </div>
+      </div>
+      <div style="flex:0 0 320px;display:flex;flex-direction:column;gap:14px">
+        <div class="panel">
+          <div class="ptitle">Reglas</div>
+          <div style="display:flex;gap:4px;margin-bottom:4px">
+            <button class="tab" data-setholes="off" style="font-size:10px;padding:4px 8px;${!S.noHoles?"background:var(--gold);color:#1A1408":""}">Faroles: libre</button>
+            <button class="tab" data-setholes="on" style="font-size:10px;padding:4px 8px;${S.noHoles?"background:var(--gold);color:#1A1408":""}">Sin huecos internos</button>
+          </div>
+          ${S.noHoles?'<div class="hint">El farol necesita un vecino libre y no puedes encerrar casillas vacías</div>':''}
+        </div>
+        <div class="panel">
+          <div class="ptitle">Tokens de la carrera</div>
+          ${tokModeToggle()}
+          ${pilesHtml()}
+          ${S.tokMode==="off"?'<div class="hint">Los tokens se reclaman pero NO suman puntos (modo análisis)</div>':''}
+        </div>
+        <div class="panel">
+          <div class="ptitle">Marcador (en vivo)</div>${scoreboard}
+        </div>
+        <div class="panel log"><div class="ptitle">Registro</div>
+          ${S.log.map(l=>`<div class="${l.k}">${l.x}</div>`).join("")}
+        </div>
+      </div>
+    </div>`;
+
+  app.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.viewTab=+b.dataset.tab;render();});
+  const bU=app.querySelector("[data-undo]");if(bU)bU.onclick=undoPlace;
+  const bPD=app.querySelector("[data-pickdeck]");if(bPD)bPD.onclick=pickFromDeck;
+  const bUF=app.querySelector("[data-undofarol]");if(bUF)bUF.onclick=undoFarol;
+  const bCF=app.querySelector("[data-confirmfarol]");if(bCF)bCF.onclick=confirmFarol;
+  app.querySelectorAll("[data-place]").forEach(el=>el.onclick=()=>placeAt(el.dataset.place));
+  app.querySelectorAll('[data-act^="disp-"]').forEach(el=>el.onclick=()=>pickFromDisplay(+el.dataset.act.split("-")[1]));
+  app.querySelectorAll("[data-place]").forEach(el=>el.onclick=()=>placeAt(el.dataset.place));
+  app.querySelectorAll("[data-setrate]").forEach(b=>b.onclick=()=>{S.mayRate=b.dataset.setrate;render();});
+  app.querySelectorAll("[data-tokmode]").forEach(b=>b.onclick=()=>{S.tokMode=b.dataset.tokmode;render();});
+  app.querySelectorAll("[data-setholes]").forEach(b=>b.onclick=()=>{S.noHoles=b.dataset.setholes==="on";render();});
+  const bRe=app.querySelector("[data-restart]");
+  if(bRe)bRe.onclick=()=>{
+    if(confirm("¿Empezar una nueva partida? Se perderá la actual."))
+      {S={screen:"setup",playerConfigs:S.playerConfigs,mayRate:S.mayRate,tokMode:S.tokMode,noHoles:S.noHoles};render();}
+  };
+  fitBoards();
+}
+function fitBoards(){
+  document.querySelectorAll(".boardsizer").forEach(sizer=>{
+    const bw=+sizer.dataset.bw,bh=+sizer.dataset.bh;
+    const scroll=sizer.parentElement;             // .boardscroll
+    const scale=sizer.querySelector(".boardscale");
+    // Escala para caber en el ancho/alto visible, sin bajar de un mínimo legible.
+    const fit=Math.min(1,scroll.clientWidth/bw,scroll.clientHeight/bh);
+    const sc=Math.max(fit,0.6);
+    const sw=bw*sc, sh=bh*sc;
+    // Escalar el tablero desde la esquina y darle al SIZER el tamaño real escalado,
+    // de modo que el contenedor con scroll reserve ese espacio y permita arrastrar.
+    scale.style.transform=`scale(${sc})`;
+    scale.style.transformOrigin="top left";
+    sizer.style.width=Math.max(scroll.clientWidth,sw)+"px";
+    sizer.style.height=Math.max(scroll.clientHeight,sh)+"px";
+    // el boardscale se posiciona absoluto dentro del sizer, centrado si sobra espacio
+    scale.style.position="absolute";
+    scale.style.left=Math.max(0,(sizer.clientWidth-sw)/2)+"px";
+    scale.style.top=Math.max(0,(sizer.clientHeight-sh)/2)+"px";
+    // centrar el scroll sobre el tablero solo la primera vez (no en cada render,
+    // para no interrumpir si el jugador ya arrastró la vista)
+    if(!scroll.dataset.centered){
+      if(sw>scroll.clientWidth)scroll.scrollLeft=(scroll.scrollWidth-scroll.clientWidth)/2;
+      if(sh>scroll.clientHeight)scroll.scrollTop=(scroll.scrollHeight-scroll.clientHeight)/2;
+      scroll.dataset.centered="1";
+    }
+  });
+}
+window.addEventListener("resize",fitBoards);
+render();
+</script>
+</body>
+</html>

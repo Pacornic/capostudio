@@ -73,6 +73,8 @@ a{color:inherit;}
 .py-proto h3{margin:0 0 4px;font-size:1.2rem;}
 .py-proto .meta{color:var(--mut);font-size:.82rem;margin-bottom:8px;}
 .py-proto .pdesc{color:#d6dee7;font-size:.95rem;margin:0 0 14px;}
+.py-tags{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;}
+.py-tag{font-size:.78rem;color:var(--acc);background:rgba(224,169,74,.12);border:1px solid rgba(224,169,74,.3);border-radius:999px;padding:4px 11px;}
 .py-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
 .py-btn{display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:.9rem;
   border:1px solid var(--line);background:var(--card2);color:var(--tx);padding:9px 15px;border-radius:9px;transition:border-color .15s ease,background .15s ease;text-decoration:none;}

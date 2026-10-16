@@ -37,15 +37,19 @@ window.GAMES = [
 /* ============================================================
    PROTOTIPOS JUGABLES (pestaña "En desarrollo").
    Para añadir uno: copia su carpeta/HTML dentro de /dev/ y
-   agrega una entrada aquí. "code" opcional (capa disuasoria,
-   NO seguridad real). "path" relativo a la raíz del sitio.
+   agrega una entrada aquí. "path" = ruta desde la raíz del sitio.
+   Campos opcionales: players, time, tags[], updated.
+   El botón "Jugar" abre el juego en su propia URL (pantalla
+   completa) y "Copiar enlace" la comparte. Acceso abierto.
    ============================================================ */
 window.PROTOS = [
   {
     name: "The Wild Call",
     path: "dev/The Wild Call/the-wild-call.html",
-    // desc: "Prototipo jugable en desarrollo.",
-    // updated: "2026-10-16",
-    code: "5555" // deja "" sin código; pon p.ej. "clave123" para pedir código al abrir
+    desc: "Prototipo jugable en desarrollo.",
+    players: "",      // p.ej. "2-4 jugadores"
+    time: "",         // p.ej. "20-30 min"
+    tags: [],         // p.ej. ["Colocación de losetas", "Gestión de recursos"]
+    updated: "2026-10-16"
   }
 ];

@@ -80,7 +80,7 @@ window.PROTOS = [
     {
     name: "Niwa",
     // subtitle: "Prototipo en desarrollo",
-    type: "Tiles",
+    type: "Board Game",
     emoji: "🐞",
     color: "#2f4a3a",
     desc: "Edita esta descripción con la temática y el objetivo del juego.",

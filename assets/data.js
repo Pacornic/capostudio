@@ -42,14 +42,36 @@ window.GAMES = [
    El botón "Jugar" abre el juego en su propia URL (pantalla
    completa) y "Copiar enlace" la comparte. Acceso abierto.
    ============================================================ */
+/*  PLANTILLA — copia este bloque para cada juego nuevo (todo opcional salvo name y path):
+  {
+    name:     "Nombre del juego",
+    subtitle: "Mecánica principal en una línea",
+    type:     "Juego de mesa",              // o "Juego de cartas"
+    emoji:    "🐺",                          // miniatura si no pones imagen
+    color:    "#2f4a3a",                     // color de fondo de la miniatura
+    thumb:    "dev/mi-juego/cover.jpg",      // imagen de portada (si la tienes; sustituye a emoji)
+    desc:     "Descripción del juego para los testers.",
+    players:  "2-4 jugadores",
+    time:     "20-30 min",
+    tags:     ["Colocación de losetas", "Gestión de recursos"],
+    path:     "dev/mi-juego/index.html",     // página jugable
+    rulebook: "dev/mi-juego/reglamento.pdf", // opcional; muestra el botón Reglamento
+    updated:  "2026-10-16"
+  },
+*/
 window.PROTOS = [
   {
     name: "The Wild Call",
+    subtitle: "Prototipo en desarrollo",
+    type: "Juego de mesa",
+    emoji: "🐺",
+    color: "#2f4a3a",
+    desc: "Edita esta descripción con la temática y el objetivo del juego.",
+    players: "2-4 jugadores",
+    time: "20-30 min",
+    tags: ["Por definir"],
     path: "dev/The Wild Call/the-wild-call.html",
-    desc: "Prototipo jugable en desarrollo.",
-    players: "",      // p.ej. "2-4 jugadores"
-    time: "",         // p.ej. "20-30 min"
-    tags: [],         // p.ej. ["Colocación de losetas", "Gestión de recursos"]
+    rulebook: "",
     updated: "2026-10-16"
   }
 ];

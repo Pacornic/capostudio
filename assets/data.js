@@ -67,11 +67,15 @@ window.PROTOS = [
     emoji: "🐺",
     color: "#2f4a3a",
     desc: "Edita esta descripción con la temática y el objetivo del juego.",
-    players: "2-4 jugadores",
-    time: "20-30 min",
-    tags: ["Por definir"],
+    players: "2-5 jugadores",
+    time: "20 min",
+    tags: ["Trick Taking","Set Collection"],
     path: "dev/The Wild Call/the-wild-call.html",
     rulebook: "",
     updated: "2026-10-16"
   }
+  
+  
+  
+  
 ];

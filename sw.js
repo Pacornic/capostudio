@@ -1,13 +1,14 @@
-/* Service Worker: modo offline completo (precachea páginas, datos, portadas,
-   fotos y prototipos) + instalable como PWA.
-   IMPORTANTE: sube el número de versión (CACHE) cada vez que cambies archivos,
-   para que a los visitantes les llegue la versión nueva. */
-const CACHE = 'capostudio-v1';
+/* Service Worker: offline completo + instalable (PWA) con actualización AUTOMÁTICA.
+   No hay que tocar ninguna versión a mano:
+   - Con conexión: siempre busca la versión más reciente del sitio y refresca la copia.
+   - Sin conexión: sirve la última copia guardada.
+   - Imágenes de BGG (no cambian): se sirven desde la copia, rápidas. */
+const CACHE = 'capostudio';
 
-/* Cargar los datos para conocer todas las imágenes/prototipos a precachear.
-   data.js usa "window"; en el SW no existe, así que lo apuntamos a "self". */
+/* Cargar los datos para precachear imágenes/prototipos en la primera visita.
+   data.js usa "window"; en el SW no existe, lo apuntamos a "self". */
 self.window = self;
-try { importScripts('./assets/data.js'); } catch (e) { /* seguirá funcionando con lo básico */ }
+try { importScripts('./assets/data.js'); } catch (e) {}
 
 const LOCAL = [
   './', './index.html', './proximamente.html', './protos.html',
@@ -24,19 +25,16 @@ function imageUrls() {
   (self.PROTOS || []).forEach(p => { if (p.thumb) out.push(p.thumb); });
   return out;
 }
-function protoUrls() {
-  return (self.PROTOS || []).map(p => p.path).filter(Boolean);
-}
+function protoUrls() { return (self.PROTOS || []).map(p => p.path).filter(Boolean); }
 
+/* Primera visita: guardar todo para que funcione offline desde ya. */
 self.addEventListener('install', (e) => {
   e.waitUntil((async () => {
     const cache = await caches.open(CACHE);
     await cache.addAll(LOCAL).catch(() => {});
-    // Prototipos (mismo origen; pueden llevar espacios en la ruta)
     await Promise.all(protoUrls().map(async (u) => {
       try { const req = new Request(encodeURI(u)); const r = await fetch(req); if (r.ok) await cache.put(req, r); } catch (e) {}
     }));
-    // Imágenes de BGG (otro origen -> no-cors, se guardan como "opacas")
     await Promise.all(imageUrls().map(async (u) => {
       try { const r = await fetch(u, { mode: 'no-cors' }); await cache.put(u, r); } catch (e) {}
     }));
@@ -55,19 +53,38 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
-  e.respondWith((async () => {
-    const cached = await caches.match(req);
-    if (cached) return cached;
-    try {
-      const res = await fetch(req);
-      try { const cache = await caches.open(CACHE); cache.put(req, res.clone()); } catch (e) {}
-      return res;
-    } catch (e) {
-      if (req.mode === 'navigate') {
-        const idx = await caches.match('./index.html');
-        if (idx) return idx;
+  const sameOrigin = new URL(req.url).origin === self.location.origin;
+
+  if (sameOrigin) {
+    // Páginas, datos, estilos y scripts -> RED PRIMERO (siempre lo más nuevo),
+    // y si no hay conexión, la copia guardada. Así se actualiza solo.
+    e.respondWith((async () => {
+      try {
+        const res = await fetch(req);
+        try { const cache = await caches.open(CACHE); cache.put(req, res.clone()); } catch (e) {}
+        return res;
+      } catch (e) {
+        const cached = await caches.match(req);
+        if (cached) return cached;
+        if (req.mode === 'navigate') {
+          const idx = await caches.match('./index.html');
+          if (idx) return idx;
+        }
+        return new Response('Sin conexión', { status: 503, statusText: 'Offline' });
       }
-      return new Response('Sin conexión', { status: 503, statusText: 'Offline' });
-    }
-  })());
+    })());
+  } else {
+    // Imágenes de BGG -> COPIA PRIMERO (rápidas), y si no están, de la red.
+    e.respondWith((async () => {
+      const cached = await caches.match(req);
+      if (cached) return cached;
+      try {
+        const res = await fetch(req);
+        try { const cache = await caches.open(CACHE); cache.put(req, res.clone()); } catch (e) {}
+        return res;
+      } catch (e) {
+        return new Response('', { status: 503 });
+      }
+    })());
+  }
 });

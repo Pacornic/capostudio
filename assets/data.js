@@ -36,7 +36,7 @@ window.GAMES = [
   {i:"455368",n:"Salem",y:"2025",cat:"pub",pl:"2-4",t:"20-30 min",ag:"10+",d:"Compite como mercader alquimista en el mercado más mágico.",c:"_7MRtkx2yDOLaeieXA-cBQ~1hxJvYPb951Xh3fQqBWcq2syaKM~pic9136990.jpg",p:["_7MRtkx2yDOLaeieXA-cBQ~khzZfGY9mbbsAgS5Byw06L4IFIk~pic9136990.jpg","bTVYS8kYNEl_tEh86ByY2w~aU5jDQFvkBgS41TlzeN-_Tu-Liw~pic9136986.jpg","WQCJ34paPtSEzGrKCaEp8g~J8jI1MLtUAq-z5GEbdnn78XO274~pic9136985.jpg","Wzr3p2xylAAyFzXrNXhN1g~SwIh8afW7qq_wuWV7hyfBbU8JOo~pic9136984.jpg"]},
   {i:"309416",n:"Akihabara",y:"Próximamente",cat:"soon",pl:"2-4",t:"15-20 min",ag:"7+",d:"Transforma la vieja Ciudad Eléctrica de Tokio en el vibrante Akihabara.",c:null,p:[]},
   {i:"428723",n:"Banzai",y:"Próximamente",cat:"soon",pl:"2-5",t:"20-30 min",ag:"8+",d:"Prepárate para desafiar a los demás clanes de la ciudad.",c:null,p:[]},
-  {i:"480738",n:"Belladonna",y:"Próximamente",cat:"soon",pl:"1-4",t:"60-120 min",ag:"14+",d:"Invita, sienta y envenena a los nobles en el siniestro banquete de Catalina de Médici.",c:"https://cf.geekdo-images.com/-C63ybOBUfekReBvZFxKuA__itemrep/img/vb6niORyC50W8RudugvaWD34FyA=/fit-in/246x300/filters:strip_icc()/pic9865362.png",p:["https://cf.geekdo-images.com/RjJxGHqLvg8bT2QTaUcyig__large/img/X6ozHATijT319x1I28gjFYsLmYA=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic9865476.png","https://cf.geekdo-images.com/-C63ybOBUfekReBvZFxKuA__large/img/izErc8FM9jU11XvwNtqrzCx-coY=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic9865362.png"]}
+  {i:"480738",n:"Belladonna",y:"2027",cat:"soon",pl:"1-4",t:"60-120 min",ag:"14+",d:"Invita, sienta y envenena a los nobles en el siniestro banquete de Catalina de Médici.",c:"https://cf.geekdo-images.com/-C63ybOBUfekReBvZFxKuA__itemrep/img/vb6niORyC50W8RudugvaWD34FyA=/fit-in/246x300/filters:strip_icc()/pic9865362.png",p:["https://cf.geekdo-images.com/RjJxGHqLvg8bT2QTaUcyig__large/img/X6ozHATijT319x1I28gjFYsLmYA=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic9865476.png","https://cf.geekdo-images.com/-C63ybOBUfekReBvZFxKuA__large/img/izErc8FM9jU11XvwNtqrzCx-coY=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic9865362.png"]}
 ];
 
 /* Mecánicas por juego (traídas de BGG). Clave = id del juego. Edita libremente. */
@@ -135,8 +135,20 @@ window.PROTOS = [
     time: "20 min",
     tags: ["Tile Placement","Set Colletion","Open Drafting","End Game Bonuses"],
     path: "dev/Niwa/Niwa.html",
-    rulebook: "",
+    rulebook: "https://drive.google.com/file/d/1YivzPYrD2oEUi4CDQ6plAhbYMdpO0mLu/view?usp=sharing",
    // updated: "2026-10-16"
+  },
+  {
+    name: "Gossip",
+    type: "Card Game",
+    emoji: "🗣️",
+    color: "#2f4a3a",
+    desc: "Edita esta descripción con la temática y el objetivo del juego.",
+    players: "",
+    time: "",
+    tags: [],
+    path: "",
+    rulebook: "https://drive.google.com/file/d/1lCwEBJOFqIh1WBzrhjASJ7T-PmIvU5UJ/view?usp=sharing"
   }
   
   

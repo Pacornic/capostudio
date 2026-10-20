@@ -571,7 +571,7 @@ function renderPlayers(){
     });
     const n=won.length;
     const scale=[2,3,4,5,6].map(k=>`<div class="${n===k?'on':''}">≠<b>${k}</b><span class="vp">${SCALE_B[k]}VP</span></div>`).join('');
-    const beat=p.expertColor?`<span class="beat" style="background:${CM[p.expertColor].color}" title="Beat: ${CM[p.expertColor].name}">${CM[p.expertColor].em}</span>`:'';
+    const beat=p.expertColor?`<span class="beat" style="background:${CM[p.expertColor].color}" title="Expert Badge: ${CM[p.expertColor].name}">${CM[p.expertColor].em}</span>`:'';
     const tips=p.dTokens>0?`<span class="tips" title="Top Tips">📣×2 · ${p.dTokens}</span>`:'';
     d.innerHTML=`<div class="pbtop">${beat}<span class="pbn">${p.name}</span><span class="pbt">${p.isAI?'AI':'human'}</span>${tips}<span class="pbs">${p.score}</span></div>
       <div class="camzone"><div class="cam">📸</div><div class="cdice">${dice}</div>${cval}</div>
@@ -592,7 +592,7 @@ function salePanelHTML(sale,mode){
       else if(isTop&&mode==='tip'){cls+=' best';badge='<span class="tipbadge">📣×2</span>';}
       return `<div class="${cls}">${badge}<div class="pic" style="background:${c.color};color:${c.ink}">${c.em}</div><div class="pv">${val}</div></div>`;
     }).join('');
-    const extra=[x.isExpert?'★ Beat: double value':'',x.premioGained?'🏆 Press Award':''].filter(Boolean).join(' · ');
+    const extra=[x.isExpert?'★ Expert Badge: double value':'',x.premioGained?'🏆 Press Award':''].filter(Boolean).join(' · ');
     const btn=(mode==='tip'&&!x.doubled)?`<button class="btn" data-dc="${x.id}" style="border-color:var(--gold);color:var(--gold-soft)">📣 Double ${c.em} ${x.top} → ${x.top*2}</button>`:'';
     return `<div class="sline"><div class="sname"><b>${c.name}</b><br>${x.sold} photo${x.sold>1?'s':''}${extra?`<div class="sextra">${extra}</div>`:''}</div><div class="sphotos">${tiles}</div>${btn}<div class="stot">+${x.value}</div></div>`;
   }).join('');

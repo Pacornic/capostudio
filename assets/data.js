@@ -121,12 +121,9 @@ window.PROTOS = [
     rulebook: "https://drive.google.com/file/d/1oKAbW3YUEXA4x5CShpT5cVuJJFToxlJ7/view?usp=sharing",
    // updated: "2026-10-16"
   }
-  
-  ,
-  
-    {
+    ,
+  {
     name: "Niwa",
-    // subtitle: "Prototipo en desarrollo",
     type: "Board Game",
     emoji: "🐞",
     color: "#2f4a3a",
@@ -147,7 +144,7 @@ window.PROTOS = [
     players: "2-5",
     time: "20 min",
     tags: ["Push Your Luck", "Set Collection"],
-    path: "",
+    path: ""dev/gossip/gossip.html"",
     rulebook: "https://drive.google.com/file/d/1lCwEBJOFqIh1WBzrhjASJ7T-PmIvU5UJ/view?usp=sharing"
   }
   

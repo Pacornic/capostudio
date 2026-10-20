@@ -144,7 +144,7 @@ window.PROTOS = [
     players: "2-5",
     time: "20 min",
     tags: ["Push Your Luck", "Set Collection"],
-    path: ""dev/Gossip/Gossip.html"",
+    path: "dev/Gossip/Gossip.html",
     rulebook: "https://drive.google.com/file/d/1lCwEBJOFqIh1WBzrhjASJ7T-PmIvU5UJ/view?usp=sharing"
   }
   

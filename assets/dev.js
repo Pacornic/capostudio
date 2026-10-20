@@ -32,7 +32,7 @@
     grid.innerHTML = protos.map(function (p, idx) {
       var cs = [];
       if (p.players) cs.push('<div class="py-stat"><div class="k">Players</div><div class="v">' + esc(p.players) + '</div></div>');
-      if (p.time) cs.push('<div class="py-stat"><div class="k">Duration</div><div class="v">' + esc(p.time) + '</div></div>');
+      if (p.time) cs.push('<div class="py-stat"><div class="k">Time</div><div class="v">' + esc(p.time) + '</div></div>');
       var cstats = cs.length ? '<div class="py-cstats">' + cs.join('') + '</div>' : '';
       return '<div class="py-card" data-idx="' + idx + '">' + thumb(p) +
         '<div class="py-cbody"><div class="py-cname">' + esc(p.name) + '</div>' +
@@ -47,7 +47,7 @@
       var p = protos[idx];
       var sarr = [];
       if (p.players) sarr.push('<div class="py-stat"><div class="k">Players</div><div class="v">' + esc(p.players) + '</div></div>');
-      if (p.time) sarr.push('<div class="py-stat"><div class="k">Duration</div><div class="v">' + esc(p.time) + '</div></div>');
+      if (p.time) sarr.push('<div class="py-stat"><div class="k">Time</div><div class="v">' + esc(p.time) + '</div></div>');
       var stats = sarr.length ? '<div class="py-stats">' + sarr.join('') + '</div>' : '';
 
       var tags = p.tags || [];

@@ -118,7 +118,7 @@ window.PROTOS = [
     time: "20 min",
     tags: ["Trick Taking","Take that","Deduction"],
     path: "dev/The Wild Call/the-wild-call.html",
-    rulebook: "",
+    rulebook: "https://drive.google.com/file/d/1oKAbW3YUEXA4x5CShpT5cVuJJFToxlJ7/view?usp=sharing",
    // updated: "2026-10-16"
   }
   
@@ -149,20 +149,6 @@ window.PROTOS = [
     tags: ["Push Your Luck", "Set Collection"],
     path: "",
     rulebook: "https://drive.google.com/file/d/1lCwEBJOFqIh1WBzrhjASJ7T-PmIvU5UJ/view?usp=sharing"
-  }
-  
-  ,
-    {
-    name: "The Wild Call",
-    type: "Card Game",
-    emoji: "🗣️",
-    color: "#2f4a3a",
-    desc: "Edita esta descripción con la temática y el objetivo del juego.",
-    players: "",
-    time: "15 min",
-    tags: ["Trick taking","Set Colletion"],
-    path: "",
-    rulebook: "https://drive.google.com/file/d/1oKAbW3YUEXA4x5CShpT5cVuJJFToxlJ7/view?usp=sharing"
   }
   
   

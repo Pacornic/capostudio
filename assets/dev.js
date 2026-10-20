@@ -29,11 +29,9 @@
       return '<div class="py-dcover py-dcover-emoji" style="background:' + (p.color ? esc(p.color) : '#1f2e3f') + '">' + esc(p.emoji || '🎲') + '</div>';
     }
 
-    function stripPlayers(v) { return String(v).replace(/\s*(jugadores?|players?)/i, ''); }
-
     grid.innerHTML = protos.map(function (p, idx) {
       var cs = [];
-      if (p.players) cs.push('<div class="py-stat"><div class="k">Players</div><div class="v">' + esc(stripPlayers(p.players)) + '</div></div>');
+      if (p.players) cs.push('<div class="py-stat"><div class="k">Players</div><div class="v">' + esc(p.players) + '</div></div>');
       if (p.time) cs.push('<div class="py-stat"><div class="k">Duration</div><div class="v">' + esc(p.time) + '</div></div>');
       var cstats = cs.length ? '<div class="py-cstats">' + cs.join('') + '</div>' : '';
       return '<div class="py-card" data-idx="' + idx + '">' + thumb(p) +
@@ -48,7 +46,7 @@
     function showDetail(idx) {
       var p = protos[idx];
       var sarr = [];
-      if (p.players) sarr.push('<div class="py-stat"><div class="k">Players</div><div class="v">' + esc(String(p.players).replace(/\s*(jugadores?|players?)/i, '')) + '</div></div>');
+      if (p.players) sarr.push('<div class="py-stat"><div class="k">Players</div><div class="v">' + esc(p.players) + '</div></div>');
       if (p.time) sarr.push('<div class="py-stat"><div class="k">Duration</div><div class="v">' + esc(p.time) + '</div></div>');
       var stats = sarr.length ? '<div class="py-stats">' + sarr.join('') + '</div>' : '';
 

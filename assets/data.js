@@ -146,7 +146,7 @@ window.PROTOS = [
     desc: "Edita esta descripción con la temática y el objetivo del juego.",
     players: "2-5 players",
     time: "20 min",
-    tags: [Push Your Luck, Set Collection],
+    tags: ["Push Your Luck", "Set Collection"],
     path: "",
     rulebook: "https://drive.google.com/file/d/1lCwEBJOFqIh1WBzrhjASJ7T-PmIvU5UJ/view?usp=sharing"
   }

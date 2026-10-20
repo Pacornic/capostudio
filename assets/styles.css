@@ -40,6 +40,10 @@ a{color:inherit;}
 .py-cname{font-weight:600;font-size:1.02rem;line-height:1.25;}
 .py-cyear{font-size:.78rem;color:var(--mut);margin-top:3px;letter-spacing:.5px;}
 .py-cpub{font-size:.74rem;color:var(--mut);margin-top:5px;line-height:1.35;}
+.py-cstats{display:flex;gap:6px;margin-top:10px;}
+.py-cstats .py-stat{flex:1;min-width:0;padding:6px 8px;}
+.py-cstats .py-stat .k{font-size:.6rem;}
+.py-cstats .py-stat .v{font-size:.9rem;}
 
 /* ---- Detalle de juego ---- */
 .py-detail{display:none;}

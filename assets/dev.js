@@ -29,10 +29,16 @@
       return '<div class="py-dcover py-dcover-emoji" style="background:' + (p.color ? esc(p.color) : '#1f2e3f') + '">' + esc(p.emoji || '🎲') + '</div>';
     }
 
+    function stripPlayers(v) { return String(v).replace(/\s*(jugadores?|players?)/i, ''); }
+
     grid.innerHTML = protos.map(function (p, idx) {
+      var cs = [];
+      if (p.players) cs.push('<div class="py-stat"><div class="k">Players</div><div class="v">' + esc(stripPlayers(p.players)) + '</div></div>');
+      if (p.time) cs.push('<div class="py-stat"><div class="k">Duration</div><div class="v">' + esc(p.time) + '</div></div>');
+      var cstats = cs.length ? '<div class="py-cstats">' + cs.join('') + '</div>' : '';
       return '<div class="py-card" data-idx="' + idx + '">' + thumb(p) +
         '<div class="py-cbody"><div class="py-cname">' + esc(p.name) + '</div>' +
-        (p.type ? '<div class="py-cyear">' + esc(p.type) + '</div>' : '') + '</div></div>';
+        (p.type ? '<div class="py-cyear">' + esc(p.type) + '</div>' : '') + cstats + '</div></div>';
     }).join('');
 
     grid.querySelectorAll('.py-card').forEach(function (el) {
@@ -54,7 +60,7 @@
 
       var btns = '';
       if (p.path) btns += '<a class="py-btn primary" href="' + esc(p.path) + '" target="_blank" rel="noopener">&#9654; Jugar</a>';
-      if (p.rulebook) btns += '<a class="py-btn" href="' + esc(p.rulebook) + '" target="_blank" rel="noopener">📖 Reglamento</a>';
+      if (p.rulebook) btns += '<a class="py-btn" href="' + esc(p.rulebook) + '" target="_blank" rel="noopener">📖 Rules</a>';
 
       detV.innerHTML = '<button class="py-back">&larr; Volver</button>' +
         '<div class="py-dhead">' + cover(p) +

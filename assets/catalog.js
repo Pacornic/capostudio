@@ -7,6 +7,14 @@
     var cat = opts.category;
     var mount = document.querySelector(opts.mount);
     var games = window.GAMES.filter(function (g) { return g.cat === cat; });
+    if (cat === 'soon') {
+      // Próximamente: primero los que tienen año concreto (ascendente), luego los "Próximamente".
+      games.sort(function (a, b) {
+        var ay = /^\d{4}$/.test(a.y) ? +a.y : Infinity;
+        var by = /^\d{4}$/.test(b.y) ? +b.y : Infinity;
+        return ay - by;
+      });
+    }
 
     mount.innerHTML =
       '<div class="py-view" id="list"><div class="py-grid" id="grid"></div></div>' +

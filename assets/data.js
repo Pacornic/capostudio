@@ -131,7 +131,7 @@ window.PROTOS = [
     emoji: "🐞",
     color: "#2f4a3a",
     desc: "Edita esta descripción con la temática y el objetivo del juego.",
-    players: "2-4 jugadores",
+    players: "2-4 players",
     time: "20 min",
     tags: ["Tile Placement","Set Colletion","Open Drafting","End Game Bonuses"],
     path: "dev/Niwa/Niwa.html",
@@ -144,13 +144,26 @@ window.PROTOS = [
     emoji: "🗣️",
     color: "#2f4a3a",
     desc: "Edita esta descripción con la temática y el objetivo del juego.",
-    players: "",
-    time: "",
-    tags: [],
+    players: "2-5 players",
+    time: "20 min",
+    tags: [Push Your Luck, Set Collection],
     path: "",
     rulebook: "https://drive.google.com/file/d/1lCwEBJOFqIh1WBzrhjASJ7T-PmIvU5UJ/view?usp=sharing"
   }
   
+  ,
+    {
+    name: "The Wild Call",
+    type: "Card Game",
+    emoji: "🗣️",
+    color: "#2f4a3a",
+    desc: "Edita esta descripción con la temática y el objetivo del juego.",
+    players: "",
+    time: "15 min",
+    tags: ["Trick taking","Set Colletion"],
+    path: "",
+    rulebook: "https://drive.google.com/file/d/1oKAbW3YUEXA4x5CShpT5cVuJJFToxlJ7/view?usp=sharing"
+  }
   
   
   

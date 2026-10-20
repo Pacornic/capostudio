@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GOSSIP!</title>
+<style>
+  :root{--ink:#0b0e14;--panel:#121722;--panel-2:#0c0f17;--line:#232b3a;--text:#e8edf6;--muted:#8a94a7;--gold:#d8a44e;--gold-soft:#e6c489;--ok:#59c07b;--danger:#e5484d;--danger-soft:#ff8a6a}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{margin:0;height:100%}
+  body{background:radial-gradient(1200px 600px at 70% -10%,#1a2233 0%,transparent 60%),var(--ink);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;margin:0}
+  .wrap{max-width:680px;margin:0 auto;padding:18px 16px 60px}
+  .inpanel{display:flex;justify-content:center;width:100%}
+  .inpanel .modal{background:transparent;border:none;box-shadow:none;padding:0;max-width:640px;width:100%}
+  .topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .topbar h1{font-size:26px;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:13px}
+  .spacer{flex:1}
+  .pill{font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 11px;white-space:nowrap}
+  .pill b{color:var(--text)}
+  .pill.toggle{cursor:pointer;user-select:none}
+  .pill.toggle.on{border-color:var(--gold);color:var(--gold-soft)}
+  .pill.toggle .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--muted);margin-right:6px}
+  .pill.toggle.on .dot{background:var(--gold)}
+  .premios{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+  .tok{display:inline-flex;align-items:center;gap:2px;font-size:12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:1px 5px}
+  .tok .n{font-size:10px;color:var(--gold-soft);font-weight:700}
+  .btn{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 14px;font:inherit;cursor:pointer;transition:.12s}
+  .btn:hover{border-color:#3a4658}
+  .btn.primary{background:var(--gold);color:#241a08;border-color:var(--gold);font-weight:700}
+  .btn.ghost{background:transparent}
+  .btn.sm{padding:5px 9px;font-size:12.5px}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+  .card h2{font-size:15px;letter-spacing:.3px;color:var(--gold-soft);margin-bottom:6px;text-transform:uppercase;font-family:system-ui;font-weight:700}
+  .note{color:var(--muted);font-size:12px;margin-bottom:12px;line-height:1.45}
+  .market{display:flex;gap:8px;width:100%}
+  .mcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 4px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line)}
+  .mcol .em{font-size:26px;line-height:1}
+  .demand{font-family:Georgia,serif;font-weight:700;font-size:22px}
+  .demand.zero{color:#3a4356}
+  .cubes{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;max-width:52px;min-height:8px}
+  .cube{width:8px;height:8px;border-radius:2px}
+  .cname{font-size:10px;color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+  .price{font-size:10px;color:var(--gold-soft)}
+  .dice{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0 10px}
+  .die{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:23px;border:2px solid rgba(255,255,255,.25);box-shadow:0 3px 8px rgba(0,0,0,.4)}
+  .die.dim{opacity:.3}
+  .die.sel{outline:3px solid var(--gold);outline-offset:2px;transform:scale(1.06)}
+  .die.pick{cursor:pointer}
+  .die.pick:hover{transform:scale(1.08);box-shadow:0 4px 12px rgba(216,164,78,.35)}
+  .prompt{color:var(--muted);font-size:13.5px;margin:6px 0}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+  .assign{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0;padding:7px 9px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2)}
+  .assign .lbl{font-weight:700;min-width:120px}
+  .zonechips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .chip{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--gold);border-radius:8px;padding:2px 8px;font-size:13px;background:var(--panel-2)}
+  .players{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pl{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--panel-2)}
+  .pl.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+  .phead{display:flex;align-items:center;gap:8px}
+  .pname{font-weight:700}
+  .tag2{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+  .score{margin-left:auto;font-family:Georgia,serif;font-size:20px;color:var(--gold-soft)}
+  .log{height:220px;overflow:auto;font-size:12.5px;line-height:1.5;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel-2)}
+  .log .l{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+  .log .head{color:var(--gold-soft)}.log .boom{color:var(--danger-soft)}.log .gold{color:var(--gold-soft)}
+  .grid2{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+  @media(max-width:560px){.players{grid-template-columns:1fr}.die{width:40px;height:40px;font-size:20px}.mcol .em{font-size:22px}.card{padding:12px}.assign .lbl{min-width:auto}}
+  .apbox{border:1px solid var(--gold);border-radius:10px;padding:8px 10px;background:rgba(216,164,78,.06)}
+  .apbox .aphead{font-size:11px;letter-spacing:.3px;color:var(--gold-soft);text-transform:uppercase;font-weight:700;margin-bottom:6px}
+  .apbox .aprow{display:flex;gap:6px;flex-wrap:wrap}
+  .apbox .apchip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:8px;padding:3px 9px;font-size:14px;background:var(--panel-2)}
+  .apbox .apchip .q{font-family:Georgia,serif;font-weight:700}
+  .apbox .apchip .sell{color:var(--ok);font-size:12px}
+  .apbox .apchip .over{color:var(--danger-soft);font-size:12px}
+  .apbox .empty{color:var(--muted);font-size:12.5px}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:470px;width:100%}
+  .field{margin:12px 0}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  .segbtns{display:flex;gap:8px;flex-wrap:wrap}
+  .segbtns button{flex:1;min-width:52px;background:var(--panel-2);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:10px;cursor:pointer}
+  .segbtns button.on{background:var(--gold);color:#241a08;border-color:var(--gold);font-weight:700}
+  input.txt{background:#0b0e14;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 10px;font-size:16px}
+
+  /* ===== PANEL DE VENTA ===== */
+  .sale{display:flex;flex-direction:column;gap:8px}
+  .sline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+  .sline .sname{font-size:12px;color:var(--muted);width:150px}
+  @media(max-width:520px){.sline .sname{width:auto;min-width:78px}}
+  .sline .sname b{color:var(--text);font-size:13px}
+  .sphotos{display:flex;gap:6px;flex-wrap:wrap}
+  .sph{position:relative;width:44px;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .sph .pic{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid rgba(0,0,0,.4)}
+  .sph .pv{font:700 12px/1 system-ui,sans-serif;color:var(--text)}
+  .sph.best .pic{box-shadow:0 0 0 3px var(--gold),0 0 12px rgba(216,164,78,.7)}
+  .sph.best .pv{color:var(--gold-soft)}
+  .sph .tipbadge{position:absolute;top:-8px;right:-8px;background:var(--gold);color:#241a08;font:800 9px/1 system-ui;border-radius:8px;padding:2px 4px;white-space:nowrap}
+  .sph.used .pic{box-shadow:0 0 0 3px var(--ok)}
+  .sph.used .pv{color:var(--ok)}
+  .sline .stot{margin-left:auto;font:700 16px Georgia,serif;color:var(--ok)}
+  .sline .sextra{font-size:11px;color:var(--gold-soft)}
+  .salehint{font-size:12.5px;color:var(--muted);line-height:1.45}
+  .salehint b{color:var(--gold-soft)}
+  .saletotal{font-size:14px}
+  /* ===== TABLOID (diseño físico) ===== */
+  .tabloid{display:flex;gap:8px;width:100%}
+  .tcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .trum{display:flex;height:40px}
+  .trum>div{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap;align-content:flex-end;justify-content:center;gap:2px;padding:0 2px}
+  .rdie{width:17px;height:17px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;border:1px solid rgba(0,0,0,.4)}
+  .tcard{position:relative;display:flex;background:#fff;border:2px solid #2b2f5e;border-radius:10px;overflow:hidden}
+  .track{flex:1 1 0;min-width:0;display:flex;flex-direction:column;border-right:1px solid #c9cde6}
+  .track:last-child{border-right:none}
+  .thead{height:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;border-bottom:1px solid #2b2f5e}
+  .thead .te{font-size:15px;line-height:1}
+  .thead .tn{font-size:8px;font-weight:700;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;padding:0 2px}
+  .tbody{position:relative;height:calc(6 * var(--R) + var(--B))}
+  .tabloid{--R:40px;--B:40px}
+  .trow{height:var(--R);border-bottom:1px solid #9aa3d6}
+  .tbase{height:var(--B);background:#3d3d3f}
+  .tmid{position:absolute;left:50%;top:34px;height:calc(6 * var(--R));width:0;z-index:1}
+  .trod{position:absolute;left:0;top:0;bottom:0;width:2px;margin-left:-1px;background:#9a9a9a}
+  .tval{position:absolute;left:0;width:15px;height:15px;margin:-7.5px 0 0 -7.5px;border-radius:50%;border:1px solid #444;
+        font:700 9px/13px system-ui,sans-serif;color:#222;text-align:center;z-index:1}
+  .tval.v3{background:#e5484d}.tval.v2{background:#f2a33a}.tval.v1{background:#e8a3ad}
+  .fire{position:absolute;left:50%;width:28px;height:28px;margin:-14px 0 0 -14px;border-radius:50%;background:#bdb8b6;
+        border:1px solid #8b8583;display:flex;align-items:center;justify-content:center;font-size:16px;z-index:2;
+        box-shadow:0 1px 3px rgba(0,0,0,.45);transition:top .35s ease}
+  @media(max-width:520px){.tabloid{--R:36px;--B:36px;gap:5px}.thead .tn{font-size:7px}}
+
+  /* ===== TABLERO DE JUGADOR ===== */
+  .pboard{background:#fff;color:#1a1a2e;border:2px solid #2b2f5e;border-radius:12px;padding:8px 9px 9px}
+  .pboard.active{box-shadow:0 0 0 3px var(--gold)}
+  .pbtop{display:flex;align-items:center;gap:6px}
+  .pbtop .pbn{font-weight:800;font-size:14px}
+  .pbtop .pbt{font-size:9px;color:#666;border:1px solid #ccc;border-radius:5px;padding:0 5px}
+  .pbtop .pbs{margin-left:auto;font-family:Georgia,serif;font-size:22px;font-weight:700;color:#b8862e}
+  .beat{width:20px;height:20px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;border:1px solid #444}
+  .tips{font-size:11px;color:#8a5a00;background:#f6ecd6;border:1px solid #e0c98f;border-radius:6px;padding:0 5px}
+  .camzone{position:relative;margin-top:7px;min-height:136px;border:1px dashed #c9cde6;border-radius:8px;overflow:hidden;
+           background-color:#fbf8f0;background-image:radial-gradient(#e7c56a 1.1px,transparent 1.3px);background-size:11px 11px}
+  .camzone .cam{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:64px;opacity:.22;filter:grayscale(.4)}
+  .camzone .cdice{position:relative;display:grid;grid-template-columns:repeat(3,57px);grid-auto-rows:57px;gap:8px;justify-content:center;align-content:center;min-height:136px;padding:8px}
+  .pdie{width:57px;height:57px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:32px;border:1px solid rgba(0,0,0,.35);box-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .camzone .cval{position:absolute;right:5px;bottom:3px;font-size:10px;font-weight:700;color:#2f7d46;background:rgba(255,255,255,.85);border-radius:4px;padding:0 4px}
+  .awards{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}
+  .aw{height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:1px;font-size:13px}
+  .aw.empty{border:1px dashed}
+  .aw.empty span{opacity:.3;filter:grayscale(1)}
+  .aw.full{border:1px solid #444;box-shadow:inset 0 0 0 2px rgba(255,255,255,.25)}
+  .aw .ce{font-size:10px}
+  .awscale{display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:#555}
+  .awscale div{text-align:center;flex:1}
+  .awscale b{display:inline-block;width:15px;height:15px;line-height:13px;border:1px solid #444;border-radius:50%;font-size:9px;color:#222;background:#f0ece4}
+  .awscale .vp{color:#e5484d;font-weight:700;display:block}
+  .awscale div.on b{background:#d8a44e}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <h1>GOSSIP!</h1>
+    <span class="sub"></span>
+    <span class="spacer"></span>
+    <span class="pill" id="roundPill">Round 1 / 5</span>
+    <button class="btn ghost" id="newBtn" style="padding:6px 12px">New game</button>
+  </div>
+
+  <div class="inpanel" id="setup">
+    <div class="modal">
+      <h2 style="font-size:20px;color:var(--gold-soft);margin-bottom:4px">Gossip!</h2>
+      <div class="field"><label>Players</label><div class="segbtns" id="segN"></div></div>
+      <div class="field" id="namesWrap"></div>
+      <button class="btn primary" id="startBtn" style="width:100%;margin-top:6px">Start</button>
+    </div>
+  </div>
+
+  <div id="gameRoot" style="display:none">
+    <div class="grid2">
+      <div>
+        <div class="card">
+          <h2>Tabloid</h2>
+          <div class="tabloid" id="market"></div>
+          <div id="exclusivasBox" style="margin-top:12px"></div>
+        </div>
+        <div class="card">
+          <h2 id="turnTitle">Your turn</h2>
+          <div id="action"></div>
+        </div>
+        <div class="card">
+          <h2>Players</h2>
+          <div class="players" id="players"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS=[
+  {id:'rosa',name:'Rockstar',em:'🎸',color:'#e5484d',ink:'#fff'},
+  {id:'acia',name:'Magnate',em:'💎',color:'#3e2723',ink:'#fff'},
+  {id:'gira',name:'Athlete',em:'⚽',color:'#2fa84f',ink:'#241a08'},
+  {id:'tuli',name:'Actor',em:'🎬',color:'#f2b705',ink:'#241a08'},
+  {id:'lav',name:'Royal',em:'👑',color:'#7b6cf6',ink:'#fff'},
+  {id:'marg',name:'Supermodel',em:'👠',color:'#e8e0d0',ink:'#241a08'},
+];
+const CM=Object.fromEntries(COLORS.map(c=>[c.id,c]));
+const NDICE=6;
+const PRICE_TABLE=[1,1,2,2,3,3]; // precio por posición 1..6 en la pila de hype
+let S=null;
+
+function priceAt(pos){ return PRICE_TABLE[pos-1] ?? 3; }
+// valor de vender "s" unidades cuando la hype acumulada es "d" (se consumen las posiciones más altas primero)
+function sellValue(d,s){
+  d=Math.max(0,Math.min(6,d)); s=Math.max(0,Math.min(d,s));
+  let v=0; for(let i=d-s+1;i<=d;i++) v+=priceAt(i);
+  return v;
+}
+function stackValue(d){ return sellValue(d,d); } // valor total si se vendiera toda la hype actual
+
+function rndColor(){return COLORS[Math.floor(Math.random()*6)].id;}
+function log(html,cls){S.log.unshift({html,cls:cls||''});}
+function curP(){return S.players[S.cur];}
+function emptyMap(v){const m={};COLORS.forEach(c=>m[c.id]=v);return m;}
+function zoneColors(){return COLORS.filter(c=>S.turnZone[c.id]>0).map(c=>c.id);}
+
+// añade 1 unidad de hype a rumores; si llega a 7, estalla ese color (se vacía)
+function bankAdd(color){
+  S.bank[color]++;
+  if(S.bank[color]>=7){
+    S.bank[color]=0;
+    log(`💥💐 El hype de ${CM[color].em} ${CM[color].name} <b>saturación mediática</b> (llegó a 7): el público está harto, el hype se desploma.`,'boom');
+    return true;
+  }
+  return false;
+}
+
+function newGame(cfg){
+  S={players:cfg.players.map(p=>({name:p.name,isAI:p.isAI,score:0,premios:emptyMap(0),saleHistory:[],dTokens:0,orangeTokens:0,expertColor:null,secretColor:null,hypeBonus:0})),
+     cur:0,bank:emptyMap(0),round:1,rounds:cfg.rounds,turnsPlayed:0,
+     phase:'turnstart',dice:[],turnZone:emptyMap(0),log:[],over:false,selColor:null,lastSale:null,
+     setsMode:(cfg.setsMode||null),compMode:!!cfg.compMode,preCommit:false,nDice:cfg.nDice||6,orangeAward:!!cfg.orangeAward,hypeBonusMode:cfg.hypeBonusMode||'secret'};
+  // Assign expert colors (unique per player, visible)
+  const availColors=COLORS.map(c=>c.id);
+  for(let i=availColors.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[availColors[i],availColors[j]]=[availColors[j],availColors[i]];}
+  S.players.forEach((p,i)=>{p.expertColor=availColors[i%availColors.length];});
+  // Hype bonus color: depends on mode
+  if(S.hypeBonusMode==='secret'){
+    S.players.forEach(p=>{
+      const pool=COLORS.map(c=>c.id).filter(c=>c!==p.expertColor);
+      p.secretColor=pool[Math.floor(Math.random()*pool.length)];
+    });
+  } else if(S.hypeBonusMode==='expert'){
+    S.players.forEach(p=>{p.secretColor=p.expertColor;});
+  }
+  // 'none' mode: secretColor stays null, no bonus
+  log('Colores expertos: '+S.players.map(p=>p.name+' '+CM[p.expertColor].em).join(' · '),'head');
+  const seed=[];for(let i=0;i<S.nDice;i++){const c=rndColor();bankAdd(c);seed.push(CM[c].em);}
+  const setsLabel=S.setsMode?`set collection activo (mínimo ${S.setsMode})`:'set collection desactivado';
+  const compLabel=S.compMode?'Top Tip activado':'Top Tip desactivado';
+  log(`Nueva partida · ${S.players.length} jugadores · ${S.rounds} rondas · ${setsLabel} · ${compLabel}.`,'head');
+  log(`Prensa del corazón: los tabloides arrancan con hype inicial ${seed.join(' ')}.`,'');
+  startTurn();return S;
+}
+const SCALE_A={2:1,3:2,4:4,5:7,6:10};
+const SCALE_B={2:1,3:3,4:6,5:10,6:15};
+let SET_POINTS=SCALE_B;   // por defecto escala A
+function setScore(premios,oc){return setScoreWith(premios,SET_POINTS,oc);}
+function biggestSetSize(premios,orangeCount){
+  const counts=COLORS.map(c=>premios[c.id]||0);
+  let distinct=counts.filter(n=>n>0).length;
+  if((orangeCount||0)>0&&distinct<6)distinct++;
+  return distinct;
+}
+function setScoreWith(premios,scale,orangeCount){
+  const counts=COLORS.map(c=>premios[c.id]||0);
+  let oLeft=orangeCount||0;
+  let total=0;
+  while(true){
+    let distinct=counts.filter(n=>n>0).length;
+    if(oLeft>0&&distinct<6){distinct++;oLeft--;}
+    if(distinct<2)break;
+    total+=(scale[distinct]||0);
+    counts.forEach((n,i)=>{if(n>0)counts[i]--;});
+  }
+  return total;
+}
+
+/* turno */
+function startTurn(){
+  S.turnZone=emptyMap(0);S.dice=[];S.selColor=null;S.dActivated=0;S.turnRumor=[];S.photoSeq=[];
+  // Si todos los tracks de hype estan en 0, re-siembra el mercado (igual que al inicio de la partida)
+  const allEmpty=COLORS.every(c=>S.bank[c.id]===0);
+  if(allEmpty){
+    const seed=[];for(let i=0;i<S.nDice;i++){const c=rndColor();bankAdd(c);seed.push(CM[c].em);}
+    log('El mercado estaba vacio: se resiembra el hype → '+seed.join(' '),'head');
+  }
+  S.phase='preroll';render();if(curP().isAI)setTimeout(aiRoll,450);
+}
+function rollFresh(){
+  S.dice=[]; for(let i=0;i<S.nDice;i++)S.dice.push(rndColor());
+  if(new Set(S.dice).size===1){
+    // BOMBSHELL: +1 Press Award de ese famoso y se vuelven a tirar todos los dados; el turno continua
+    const col=S.dice[0];const p=curP();
+    const gotAward=!(p.premios[col]>0); if(gotAward)p.premios[col]=1;
+    log('<b>BOMBSHELL!</b> '+p.name+' saca '+S.nDice+'x '+CM[col].em+' '+CM[col].name+' en su primera tirada: '+(gotAward?'<b>+1 Press Award</b>':'(ya tenía ese Press Award)')+' y vuelve a tirar todos los dados.','gold');
+    S.dice=[]; for(let i=0;i<S.nDice;i++)S.dice.push(rndColor());
+  }
+  afterRoll();
+}
+function rerollRemaining(){ S.dice=S.dice.map(()=>rndColor()); afterRoll(); }
+function afterRoll(){
+  const present=[...new Set(S.dice)];
+  const usable=present.filter(c=>S.turnZone[c]===0);
+  if(usable.length===0){ bust(); return; }
+  // check if any usable color can actually be photographed (hype >= dice count)
+  const canPhotoAny=usable.some(c=>{const cnt=S.dice.filter(d=>d===c).length;return S.bank[c]>0&&cnt<=(S.bank[c]-S.turnZone[c]);});
+  if(!canPhotoAny){
+    // can still rumor, so go to assign (Photo will be disabled, only Rumor available)
+  }
+  S.selColor=null; S.phase='assign'; render();
+  if(curP().isAI)setTimeout(aiAssign,450);
+}
+function separateColor(color,toZone){
+  const count=S.dice.filter(c=>c===color).length; if(count===0)return;
+  toZone=Math.max(0,Math.min(count,toZone)); const toBank=count-toZone;
+  if(toZone>0)S.turnZone[color]+=toZone;
+  for(let i=0;i<toZone;i++)(S.photoSeq=S.photoSeq||[]).push(color);
+  for(let i=0;i<toBank;i++){ bankAdd(color); (S.turnRumor=S.turnRumor||[]).push(color); }
+  S.dice=S.dice.filter(c=>c!==color);
+  log(`${curP().name}: ${CM[color].em} → ${toZone} a exclusivas · ${toBank} a rumores (quedan ${S.dice.length} en juego).`,'');
+  if(S.dice.length===0){ plant(); return; }
+  S.phase='decide'; render();
+  if(curP().isAI)setTimeout(aiDecide,450);
+}
+function bust(){
+  // RULE E: only photos leak to hype (dice in play are discarded)
+  const leaked={};COLORS.forEach(c=>{if(S.turnZone[c.id]>0){for(let i=0;i<S.turnZone[c.id];i++)bankAdd(c.id);leaked[c.id]=S.turnZone[c.id];}});
+  const leakTxt=Object.keys(leaked).map(c=>`${leaked[c]}${CM[c].em}`).join(' ')||'—';
+  log(`💥 ${curP().name}: en juego solo salen famosos ya fotografiados → <b>¡te descubren!</b> Pierde sus fotos. Las fotos se filtran como rumores (${leakTxt||'—'}) alimentan los rumores.`,'boom');
+  if(S.compMode){
+    if(S.dActivated>0){log(`${curP().name} pierde ${S.dActivated} 🔥×2 comprometido(s).`,'boom');}
+    S.dActivated=0;
+    if(true){curP().dTokens++;log(`${curP().name} recibe un <b>Top Tip</b> (tiene ${curP().dTokens}/3).`,'gold');}
+  }
+  S.phase='busted';render();
+  if(curP().isAI)setTimeout(endTurn,700);
+}
+function plant(){
+  const p=curP();let gained=0,penalty=0;const parts=[];const premiosWon=[];
+  const threshold=S.setsMode||0;
+  zoneColors().forEach(c=>{
+    const stock=S.turnZone[c],demand=S.bank[c];
+    const sold=Math.min(stock,demand);
+    let value=sellValue(demand,sold);
+    const isExpert=(c===p.expertColor);
+    if(isExpert&&value>0){value*=2;}
+    const photos=[];for(let j=0;j<sold;j++)photos.push(priceAt(demand-j)*(isExpert?2:1));
+    const top=photos.length?photos[0]:0; // la foto que mas vale (la primera que se vende)
+    if(sold>0){gained+=value;S.bank[c]-=sold;}
+    const left=stock-sold;
+    if(left>0)penalty+=left;
+    let premioGained=false;
+    if(threshold>0&&sold>=threshold&&!(p.premios[c]>0)){premioGained=true;premiosWon.push(c);}
+    if(sold>0||left>0)parts.push({id:c,sold,left,value,top,photos,premioGained,isExpert,doubled:false});
+  });
+  let net=gained-penalty;
+  log(`<b>${p.name}</b> se planta y publica sus exclusivas: +${gained}${penalty?` · −${penalty} sin hype (sin comprador)`:''} = <b>${net>=0?'+':''}${net}</b>.`,'gold');
+  if(premiosWon.length) log(`<b>${p.name}</b> consigue premio(s) de ${premiosWon.map(c=>CM[c].em).join(' ')} por vender ${threshold}+ fotos.`,'gold');
+  // aplicar tokens 🔥×2 activados durante el turno
+  if(S.dActivated>0&&parts.some(x=>x.value>0)){
+    const eligible=parts.filter(x=>x.value>0).sort((a,b)=>b.value-a.value);
+    let used=0;
+    for(let i=0;i<eligible.length&&used<S.dActivated;i++){
+      const bonus=eligible[i].value;
+      gained+=bonus; net+=bonus;
+      eligible[i].value*=2; eligible[i].doubled=true;
+      used++;
+    }
+    if(used>0) log(`${p.name} aplica ${used} 🔥×2 en ${eligible.filter(x=>x.doubled).map(x=>CM[x.id].em).join(' ')}: +${eligible.filter(x=>x.doubled).reduce((a,x)=>a+x.value/2,0)} extra.`,'gold');
+  }
+  // Orange award: 4+ different celebs with photos this turn
+  let orangeWon=false;
+  if(S.orangeAward){
+    const diffSold=COLORS.filter(c=>S.turnZone[c.id]>0).length;
+    if(diffSold>=4){orangeWon=true;p.orangeTokens++;log(p.name+' sells 4+ different celebs: <b>Orange Press Award!</b>','gold');}
+  }
+  // No-sale bonus: si no apartaste ninguna foto este turno (todo fue rumor forzado), token de Top Tip
+  if(S.compMode&&zoneColors().length===0){
+    p.dTokens++;
+    log(p.name+' no consigue ninguna foto este turno → recibe un <b>Top Tip</b> 🔥 (tiene '+p.dTokens+').','gold');
+  }
+  S.lastSale={parts,gained,penalty,net,name:p.name,premiosWon,applied:false,doubled:null,orangeWon,noSaleTip:(S.compMode&&zoneColors().length===0)};
+  p.saleHistory.push({round:S.round,net});
+  // modo "al publicar": ofrecer x2 después de plantarse
+  if(!S.preCommit&&S.compMode&&p.dTokens>0&&parts.some(x=>x.value>0)){
+    S.phase='usetoken';render();
+    if(curP().isAI)setTimeout(aiUseTokenPost,600);
+  } else {
+    S.phase='sold';render();
+    if(curP().isAI)setTimeout(endTurn,1200);
+  }
+}
+function applyDoublePost(colorId){
+  const p=curP();const sale=S.lastSale;
+  const part=sale.parts.find(x=>x.id===colorId&&!x.doubled);
+  if(!part||part.value<=0)return;
+  const bonus=part.top;
+  sale.net+=bonus;sale.gained+=bonus;part.value+=bonus;part.doubled=true;part.bonus=bonus;
+  p.dTokens--;
+  log(p.name+' usa <b>🔥×2</b> en su mejor foto de '+CM[colorId].em+': '+bonus+' → '+(bonus*2)+' (+'+bonus+').','gold');
+  // offer another if available
+  if(p.dTokens>0&&sale.parts.some(x=>x.top>0&&!x.doubled)){
+    S.phase='usetoken';render();
+    if(curP().isAI)setTimeout(aiUseTokenPost,600);
+  } else {
+    S.phase='sold';render();
+    if(curP().isAI)setTimeout(endTurn,1200);
+  }
+}
+function skipDoublePost(){
+  S.phase='sold';render();
+  if(curP().isAI)setTimeout(endTurn,1200);
+}
+function aiUseTokenPost(){
+  const sale=S.lastSale;const p=curP();
+  let best=null,bv=0;
+  sale.parts.forEach(x=>{if(x.top>bv&&!x.doubled){bv=x.top;best=x.id;}});
+  if(best&&bv>=2){applyDoublePost(best);}
+  else skipDoublePost();
+}
+function endTurn(){
+  if(S.phase==='sold'&&S.lastSale&&!S.lastSale.applied){
+    const p=curP();
+    p.score+=S.lastSale.net;
+    (S.lastSale.premiosWon||[]).forEach(c=>{p.premios[c]++;});
+    S.lastSale.applied=true;
+  }
+  S.turnsPlayed++;render();
+  if(S.turnsPlayed>=S.rounds*S.players.length){S.over=true;return gameOver();}
+  S.cur=(S.cur+1)%S.players.length;
+  if(S.cur===0)S.round++;
+  startTurn();
+}
+function gameOver(){
+  S.phase='gameover';
+  S.players.forEach(p=>{
+    p.salesScore=p.saleHistory.reduce((s,x)=>s+x.net,0);
+    // Tokens x2 sobrantes = 3 pts cada uno
+    if(S.compMode&&p.dTokens>0){
+      const bonus=p.dTokens*3;
+      p.score+=bonus;p.tipBonus=bonus;
+      log(p.name+': '+p.dTokens+' Top Tip(s) 🔥 sin usar = <b>+'+bonus+'</b> pts.','gold');
+    }
+    p.setsPoints=S.setsMode?setScore(p.premios,p.orangeTokens):0;
+    if(p.setsPoints>0){p.score+=p.setsPoints;log('<b>'+p.name+'</b> suma <b>+'+p.setsPoints+'</b> por premios de prensa ('+(COLORS.filter(c=>p.premios[c.id]>0).length+(S.orangeAward?p.orangeTokens:0))+' distintos).','gold');}
+  });
+  // Hype bonus: award based on hypeBonusMode
+  S.players.forEach(p=>{p.hypeBonus=0;});
+  if(S.hypeBonusMode!=='none'){
+    const hypeRanking=COLORS.map(c=>({id:c.id,hype:S.bank[c.id]})).sort((a,b)=>b.hype-a.hype);
+    const maxHype=hypeRanking[0].hype;
+    const secondEntry=hypeRanking.find(c=>c.hype<maxHype);
+    const secondVal=secondEntry?secondEntry.hype:-1;
+    const modeLabel=S.hypeBonusMode==='secret'?'color secreto':'color especialista';
+    S.players.forEach(p=>{
+      const sc=p.secretColor;if(!sc)return;
+      const scHype=S.bank[sc];
+      let bonus=0;
+      if(scHype>0&&scHype>=maxHype)bonus=7;
+      else if(scHype>0&&secondVal>0&&scHype>=secondVal)bonus=3;
+      if(bonus>0){p.score+=bonus;p.salesScore+=bonus;p.hypeBonus=bonus;}
+      log(p.name+' revela su '+modeLabel+': '+CM[sc].em+' '+CM[sc].name+' (hype '+scHype+')'+(bonus>0?' = <b>+'+bonus+' bonus!</b>':''),'gold');
+    });
+  }
+  log('<b>Fin de la temporada</b> tras '+S.rounds+' rondas.','head');render();showFinal();
+}
+
+/* IA */
+function aiRoll(){if(S.phase==='preroll')rollFresh();}
+function aiAssign(){
+  if(S.phase!=='assign')return;
+  const present=[...new Set(S.dice)].filter(c=>S.turnZone[c]===0);
+  if(present.length===0)return;
+  let best=null,bestScore=-1e9,bestZone=0;
+  present.forEach(c=>{
+    const count=S.dice.filter(d=>d===c).length;
+    const room=Math.max(0,S.bank[c]-S.turnZone[c]);
+    const hypeRoom=Math.max(0,S.bank[c]-S.turnZone[c]);const toZone=(room>=count&&count<=hypeRoom?count:0);
+    const projValue=toZone>0?sellValue(S.bank[c],count):0;
+    const sc=projValue*2 + count*0.1 + (S.turnZone[c]===0?0.3:0);
+    if(sc>bestScore){bestScore=sc;best=c;bestZone=toZone;}
+  });
+  if(best===null)best=present[0];
+  separateColor(best,bestZone);
+}
+function aiDecide(){
+  const k=zoneColors().length;
+  const m=S.dice.length;
+  const pBust=Math.pow(k/6,m);
+  // IA: activar ×2 si tiene token, buen valor y riesgo bajo (solo en modo preCommit)
+  if(S.compMode&&S.preCommit&&curP().dTokens>0&&S.dActivated===0){
+    let val=0;zoneColors().forEach(c=>{val+=sellValue(S.bank[c],Math.min(S.turnZone[c],S.bank[c]));});
+    if(val>=4&&pBust<0.3){S.dActivated++;curP().dTokens--;log(`${curP().name} activa 🔥×2.`,'gold');}
+  }
+  let val=0;zoneColors().forEach(c=>{const sold=Math.min(S.turnZone[c],S.bank[c]);val+=sellValue(S.bank[c],sold)-(S.turnZone[c]-sold);});
+  if(pBust>=0.33){plant();return;}
+  if(val>=9){plant();return;}
+  rerollRemaining();
+}
+
+/* render */
+function render(){
+  if(!S)return;
+  const rp=document.getElementById('roundPill');if(rp)rp.innerHTML=`Round <b>${Math.min(S.round,S.rounds)}</b> / ${S.rounds}`;
+  if(typeof updateSetsToggleUI==='function')updateSetsToggleUI();
+  const dt=document.getElementById('diceToggle');if(dt){dt.textContent=S.nDice+' dados';dt.style.display='';}
+  const x2t=document.getElementById('x2ModeToggle');if(x2t){x2t.textContent=S.preCommit?'🔥 antes de tirar':'🔥 al publicar';x2t.style.display=S.compMode?'':'none';}
+  renderMarket();renderExclusivas();renderPlayers();renderAction();renderLog();
+}
+function renderExclusivas(){
+  const el=document.getElementById('exclusivasBox');if(!el)return;el.innerHTML='';
+}
+function renderMarket(){
+  const el=document.getElementById('market');if(!el)return;
+  let html='';
+  for(let k=0;k<3;k++){
+    const pair=[COLORS[k*2],COLORS[k*2+1]];
+    const rum=S.turnRumor||[];
+    html+='<div class="tcol"><div class="trum">'+pair.map(c=>'<div>'+rum.filter(x=>x===c.id).map(()=>`<div class="rdie" style="background:${c.color};color:${c.ink}">${c.em}</div>`).join('')+'</div>').join('')+'</div><div class="tcard">';
+    [COLORS[k*2],COLORS[k*2+1]].forEach(c=>{
+      const d=Math.max(0,Math.min(6,S.bank[c.id]));
+      // tinte suave del color del famoso
+      const tint=c.color+'1f';
+      let rows='';for(let r=0;r<6;r++)rows+=`<div class="trow" style="background:${tint}"></div>`;
+      const top=d>0?`calc(${6-d} * var(--R) + var(--R) / 2)`:`calc(6 * var(--R) + var(--B) / 2)`;
+      html+=`<div class="track"><div class="thead" style="background:${c.color};color:${c.ink}"><span class="te">${c.em}</span><span class="tn">${c.name}</span></div>
+        <div class="tbody">${rows}<div class="tbase"></div><div class="fire" style="top:${top}" title="Hype ${d}">🔥</div></div></div>`;
+    });
+    let vals='';
+    for(let i=1;i<=6;i++){const v=priceAt(7-i);vals+=`<div class="tval v${v}" style="top:calc(${i} * var(--R))">${v}</div>`;}
+    html+=`<div class="tmid"><div class="trod"></div>${vals}</div></div></div>`;
+  }
+  el.innerHTML=html;
+}
+function renderPlayers(){
+  const el=document.getElementById('players');if(!el)return;el.innerHTML='';
+  S.players.forEach((p,i)=>{
+    const active=i===S.cur&&S.phase!=='gameover';
+    const d=document.createElement('div');d.className='pboard'+(active?' active':'');
+    // zona de cámara: dados apartados este turno
+    let dice='',cval='';
+    if(active&&S.phase!=='sold'&&S.phase!=='busted'){
+      const z=zoneColors();let tot=0;
+      (S.photoSeq||[]).forEach(c=>{const cc=CM[c];dice+=`<div class="pdie" style="background:${cc.color};color:${cc.ink}">${cc.em}</div>`;});
+      z.forEach(c=>{
+        let v=sellValue(S.bank[c],Math.min(S.turnZone[c],S.bank[c]));if(c===p.expertColor)v*=2;tot+=v;});
+      if(z.length)cval=`<div class="cval">sells +${tot}</div>`;
+    }
+    // press awards: casillas llenas primero
+    const won=COLORS.filter(c=>p.premios[c.id]>0);
+    let aw='';
+    COLORS.forEach(c=>{
+      aw+=p.premios[c.id]>0?`<div class="aw full" style="background:${c.color}" title="Press Award ${c.name}">🏆<span class="ce">${c.em}</span></div>`
+           :`<div class="aw empty" style="background:${c.color}1a;border-color:${c.color}99" title="Press Award ${c.name}"><span>🏆</span><span class="ce">${c.em}</span></div>`;
+    });
+    const n=won.length;
+    const scale=[2,3,4,5,6].map(k=>`<div class="${n===k?'on':''}">≠<b>${k}</b><span class="vp">${SCALE_B[k]}VP</span></div>`).join('');
+    const beat=p.expertColor?`<span class="beat" style="background:${CM[p.expertColor].color}" title="Beat: ${CM[p.expertColor].name}">${CM[p.expertColor].em}</span>`:'';
+    const tips=p.dTokens>0?`<span class="tips" title="Top Tips">📣×2 · ${p.dTokens}</span>`:'';
+    d.innerHTML=`<div class="pbtop">${beat}<span class="pbn">${p.name}</span><span class="pbt">${p.isAI?'AI':'human'}</span>${tips}<span class="pbs">${p.score}</span></div>
+      <div class="camzone"><div class="cam">📸</div><div class="cdice">${dice}</div>${cval}</div>
+      <div class="awards">${aw}</div>
+      <div class="awscale">${scale}</div>`;
+    el.appendChild(d);
+  });
+}
+function salePanelHTML(sale,mode){
+  // mode: 'tip' (puedes usar Top Tip) o 'sold' (resumen)
+  const p=curP();
+  const rows=sale.parts.filter(x=>x.sold>0).map(x=>{
+    const c=CM[x.id];
+    const tiles=x.photos.map((v,j)=>{
+      const isTop=j===0;
+      let cls='sph',val=v,badge='';
+      if(isTop&&x.doubled){cls+=' used';val=`${v}→${v*2}`;badge='<span class="tipbadge">📣×2</span>';}
+      else if(isTop&&mode==='tip'){cls+=' best';badge='<span class="tipbadge">📣×2</span>';}
+      return `<div class="${cls}">${badge}<div class="pic" style="background:${c.color};color:${c.ink}">${c.em}</div><div class="pv">${val}</div></div>`;
+    }).join('');
+    const extra=[x.isExpert?'★ Beat: double value':'',x.premioGained?'🏆 Press Award':''].filter(Boolean).join(' · ');
+    const btn=(mode==='tip'&&!x.doubled)?`<button class="btn" data-dc="${x.id}" style="border-color:var(--gold);color:var(--gold-soft)">📣 Double ${c.em} ${x.top} → ${x.top*2}</button>`:'';
+    return `<div class="sline"><div class="sname"><b>${c.name}</b><br>${x.sold} photo${x.sold>1?'s':''}${extra?`<div class="sextra">${extra}</div>`:''}</div><div class="sphotos">${tiles}</div>${btn}<div class="stot">+${x.value}</div></div>`;
+  }).join('');
+  return `<div class="sale">${rows||'<div class="salehint">No photos sold this turn.</div>'}</div>`;
+}
+function renderAction(){
+  const el=document.getElementById('action');if(!el)return;
+  const tt=document.getElementById('turnTitle');if(tt)tt.textContent=S.phase==='gameover'?'Game over':`Turn: ${curP()?curP().name:''}`;
+  if(S.phase==='gameover'){el.innerHTML='';return;}
+  const p=curP();
+  if(S.phase==='usetoken'){
+    const sale=S.lastSale;
+    el.innerHTML=`<div class="salehint" style="margin-bottom:8px">You have <b>${p.dTokens} 📣×2 Top Tip${p.dTokens>1?'s':''}</b>. The <b>highlighted photo</b> is your most valuable one of each celebrity: spend a Top Tip to <b>double that photo</b> (one per celebrity).</div>
+      ${salePanelHTML(sale,'tip')}
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="bSkipD">${sale.parts.some(x=>x.doubled)?'Done':'Don\'t use'}</button><span class="saletotal" style="margin-left:auto">Total: <b style="color:var(--ok)">+${sale.net}</b></span></div>`;
+    el.querySelectorAll('button[data-dc]').forEach(b=>b.onclick=()=>applyDoublePost(b.dataset.dc));
+    document.getElementById('bSkipD').onclick=skipDoublePost;
+    return;
+  }
+  if(S.phase==='sold'){
+    const sale=S.lastSale;
+    const notes=[];
+    if(sale.premiosWon&&sale.premiosWon.length)notes.push(`New Press Award${sale.premiosWon.length>1?'s':''}: ${sale.premiosWon.map(c=>CM[c].em).join(' ')}`);
+    if(sale.noSaleTip)notes.push('No photos this turn: you get a 📣×2 Top Tip');
+    el.innerHTML=`<div class="salehint" style="margin-bottom:8px"><b>${sale.name}</b> publishes:</div>
+      ${salePanelHTML(sale,'sold')}
+      <div class="row" style="margin-top:10px"><span class="saletotal">Total: <b style="color:${sale.net>=0?'var(--ok)':'var(--danger-soft)'}">${sale.net>=0?'+':''}${sale.net}</b>${notes.length?` <span class="salehint">· ${notes.join(' · ')}</span>`:''}</span></div>
+      <div class="row"><button class="btn primary" id="bSoldCont">Continue</button></div>`;
+    document.getElementById('bSoldCont').onclick=endTurn;
+    return;
+  }
+  if(S.phase==='busted'){
+    el.innerHTML=`<div class="prompt" style="color:var(--danger-soft)">💥 <b>Caught!</b> Every die showed a celebrity you had already photographed. You lose this turn's photos: they leak to the Tabloid as rumors.${S.compMode?' You get a <b>📣×2 Top Tip</b>.':''}</div>${diceHTML()}
+      <div class="row"><button class="btn primary" id="bCont">Continue</button></div>`;
+    document.getElementById('bCont').onclick=endTurn;return;
+  }
+  if(p.isAI){el.innerHTML=`<div class="prompt"><b>${p.name}</b> (AI) is playing…</div>${diceHTML()}`;return;}
+  if(S.phase==='preroll'){
+    el.innerHTML=`<div class="prompt">Your turn. Roll the dice to start.</div><div class="row"><button class="btn primary" id="bRoll">Roll dice</button></div>`;
+    document.getElementById('bRoll').onclick=rollFresh;
+    return;}
+  if(S.phase==='assign'){
+    const present=[...new Set(S.dice)];
+    const usable=present.filter(col=>S.turnZone[col]===0);
+    const committed=present.filter(col=>S.turnZone[col]>0);
+    let html=diceHTML({usable});
+    if(!S.selColor){
+      html+=`<div class="prompt"><b>Tap a celebrity</b> to take all of its dice. The rest stay in play.</div>`;
+    } else {
+      const c=CM[S.selColor];const count=S.dice.filter(d=>d===S.selColor).length;
+      const hypeAvail=S.bank[S.selColor]-S.turnZone[S.selColor];
+      const canPhoto=hypeAvail>=count&&hypeAvail>0;
+      html+=`<div class="prompt">You took <b style="color:${c.color}">${count}× ${c.em} ${c.name}</b>. Photo or Rumor?${!canPhoto?` <span style="color:var(--danger-soft)">(hype ${S.bank[S.selColor]}: not enough for ${count} photo${count>1?'s':''})</span>`:''}</div>
+        <div class="row">
+          <button class="btn primary" id="bApartar" ${canPhoto?'':'disabled'}>📸 Photo</button>
+          <button class="btn" id="bMercado" style="background:#2f80ed;color:#fff;border-color:#2f80ed;font-weight:700">💬 Rumor</button>
+        </div>
+        <div class="prompt" style="margin-top:6px;color:#5a6378">Tap another celebrity to change your pick.</div>`;
+    }
+    if(committed.length) html+=`<div class="prompt" style="margin-top:6px;color:#5a6378">Already photographed (locked): ${committed.map(c=>CM[c].em+'×'+S.dice.filter(d=>d===c).length).join(' ')}</div>`;
+    el.innerHTML=html;
+    el.querySelectorAll('.die[data-color]').forEach(b=>b.onclick=()=>{S.selColor=(S.selColor===b.dataset.color)?null:b.dataset.color;render();});
+    if(S.selColor){
+      const count=S.dice.filter(d=>d===S.selColor).length;
+      document.getElementById('bApartar').onclick=()=>{const col=S.selColor;S.selColor=null;separateColor(col,count);};
+      document.getElementById('bMercado').onclick=()=>{const col=S.selColor;S.selColor=null;separateColor(col,0);};
+    }
+    return;
+  }
+  if(S.phase==='decide'){
+    const k=zoneColors().length;const m=S.dice.length;const pBust=Math.round(Math.pow(k/6,m)*100);
+    let val=0;zoneColors().forEach(c=>{let v=sellValue(S.bank[c],Math.min(S.turnZone[c],S.bank[c]));if(c===p.expertColor)v*=2;val+=v;});
+    el.innerHTML=`${diceHTML()}<div class="prompt"><b>${m}</b> dice left. Your photos would sell for <b>+${val}</b> now. Bust risk ≈ <b>${pBust}%</b>.</div>
+      <div class="row"><button class="btn" id="bRoll" style="background:var(--ok);color:#0b2015;border-color:var(--ok);font-weight:700">Roll the ${m} remaining dice</button><button class="btn primary" id="bPlant">Publish photos</button></div>`;
+    document.getElementById('bRoll').onclick=rerollRemaining;document.getElementById('bPlant').onclick=plant;
+    return;
+  }
+}
+function diceHTML(opts){
+  if(!S.dice.length)return '';
+  opts=opts||{}; const usable=opts.usable||[];
+  const order=COLORS.map(c=>c.id);
+  const sorted=[...S.dice].sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+  return `<div class="dice">${sorted.map(id=>{
+    const c=CM[id];const sel=S.selColor===id;const committed=S.turnZone[id]>0;const clickable=usable.includes(id);
+    return `<div class="die ${sel?'sel':''} ${committed?'dim':''} ${clickable?'pick':''}" ${clickable?`data-color="${id}"`:''} style="background:${c.color};color:${c.ink}">${c.em}</div>`;
+  }).join('')}</div>`;
+}
+function renderLog(){const el=document.getElementById('log');if(!el)return;el.innerHTML=S.log.map(l=>`<div class="l ${l.cls}">${l.html}</div>`).join('');}
+function recalcFinal(scale,label){
+  S.players.forEach(p=>{
+    p.setsPoints=S.setsMode?setScoreWith(p.premios,scale,p.orangeTokens):0;
+    p.score=p.salesScore+p.setsPoints;
+  });
+  SET_POINTS=scale;
+  showFinalInner(label);
+}
+function showFinal(){ showFinalInner(SET_POINTS===SCALE_B?'B':'A'); }
+function showFinalInner(scaleLabel){
+  const order=[...S.players].sort((a,b)=>{if(b.score!==a.score)return b.score-a.score;const ta=COLORS.reduce((s,c)=>(s+(a.premios[c.id]||0)),0);const tb=COLORS.reduce((s,c)=>(s+(b.premios[c.id]||0)),0);return tb-ta;});const best=order[0].score;
+  const el=document.getElementById('action');if(!el)return;
+  el.innerHTML=`<div class="prompt" style="font-size:15px;color:var(--gold-soft)"><b>Final score</b></div>
+    <div>${order.map((p,i)=>{
+      const won=COLORS.filter(c=>p.premios[c.id]>0);
+      const aw=won.length?won.map(c=>`<span class="tok">${c.em}</span>`).join(''):'<span class="tok" style="color:var(--muted)">no awards</span>';
+      return `<div style="border:1px solid ${p.score===best?'var(--gold)':'var(--line)'};border-radius:10px;padding:8px 12px;margin-top:6px">
+        <div class="row" style="justify-content:space-between;margin-top:0"><span><b>${i+1}.</b> ${p.name} <span class="tag2">${p.isAI?'AI':'human'}</span></span><span class="score">${p.score}</span></div>
+        <div class="prompt" style="margin:4px 0 0">Photos: <b style="color:var(--text)">+${p.salesScore}</b> · Unused Top Tips: <b style="color:var(--text)">+${p.tipBonus||0}</b> · Press Awards: <b style="color:${p.setsPoints>0?'var(--ok)':'var(--muted)'}">+${p.setsPoints}</b> (${won.length} different)</div>
+        <div class="premios" style="margin-top:6px">${aw}</div>
+      </div>`;
+    }).join('')}</div>
+    <div class="row"><button class="btn primary" id="bAgain">Play again</button></div>`;
+  const bAg=document.getElementById('bAgain');if(bAg)bAg.onclick=()=>{document.getElementById('gameRoot').style.display='none';document.getElementById('setup').style.display='flex';};
+}
+/* setup */
+let setupN=3;const setupNames=['Me','Gael','Lara','Miri','Ana'];const setupTypes=['hum','ai','ai','ai','ai'];
+function buildSetup(){
+  const segN=document.getElementById('segN');segN.innerHTML='';
+  [2,3,4,5].forEach(n=>{const b=document.createElement('button');b.textContent=n;if(n===setupN)b.className='on';b.onclick=()=>{setupN=n;buildSetup();};segN.appendChild(b);});
+  const nw=document.getElementById('namesWrap');nw.innerHTML='<label>Names and type</label>';
+  for(let i=0;i<setupN;i++){const row=document.createElement('div');row.className='row';row.style.marginTop='6px';row.style.flexWrap='nowrap';
+    row.innerHTML=`<input class="txt" value="${setupNames[i]}" data-i="${i}" style="flex:1;min-width:0">
+      <button class="btn ${setupTypes[i]==='hum'?'primary':'ghost'}" data-t="hum" data-i="${i}">Human</button>
+      <button class="btn ${setupTypes[i]==='ai'?'primary':'ghost'}" data-t="ai" data-i="${i}">AI</button>`;
+    nw.appendChild(row);}
+  nw.querySelectorAll('input').forEach(inp=>inp.oninput=()=>{setupNames[inp.dataset.i]=inp.value;});
+  nw.querySelectorAll('button[data-t]').forEach(b=>b.onclick=()=>{setupTypes[b.dataset.i]=b.dataset.t;buildSetup();});
+}
+let setsModePref=2;
+function updateSetsToggleUI(){
+  const t3=document.getElementById('setsMin3Toggle');const t2=document.getElementById('setsMin2Toggle');
+  if(!t3||!t2)return;
+  const mode=(S&&S.phase!=='gameover'&&document.getElementById('gameRoot').style.display!=='none')?S.setsMode:setsModePref;
+  t3.classList.toggle('on',mode===3);
+  t2.classList.toggle('on',mode===2);
+  t3.innerHTML=`<span class="dot"></span>Set (min 3)${mode===3?' ✓':''}`;
+  t2.innerHTML=`<span class="dot"></span>Set (min 2)${mode===2?' ✓':''}`;
+}
+function setSetsMode(newMode){
+  const gameActive=S&&S.phase!=='gameover'&&document.getElementById('gameRoot').style.display!=='none';
+  if(gameActive){
+    S.setsMode=(S.setsMode===newMode?null:newMode);
+    log(`Set collection cambiado a: ${S.setsMode?`mínimo ${S.setsMode}`:'desactivado'}.`,'head');
+    render();
+  } else {
+    setsModePref=(setsModePref===newMode?null:newMode);
+  }
+  updateSetsToggleUI();
+}
+if(document.getElementById('setsMin3Toggle'))document.getElementById('setsMin3Toggle').onclick=()=>setSetsMode(3);
+if(document.getElementById('setsMin2Toggle'))document.getElementById('setsMin2Toggle').onclick=()=>setSetsMode(2);
+updateSetsToggleUI();
+document.getElementById('startBtn').onclick=()=>{
+  const players=[];for(let i=0;i<setupN;i++)players.push({name:setupNames[i]||('J'+(i+1)),isAI:setupTypes[i]==='ai'});
+  newGame({players,rounds:5,setsMode:2,compMode:true,nDice:7,orangeAward:false,hypeBonusMode:'none'});
+  document.getElementById('setup').style.display='none';document.getElementById('gameRoot').style.display='';
+};
+if(document.getElementById('diceToggle'))document.getElementById('diceToggle').onclick=()=>{if(S){S.nDice=S.nDice===6?7:6;render();}};
+if(document.getElementById('x2ModeToggle'))document.getElementById('x2ModeToggle').onclick=()=>{if(S){S.preCommit=!S.preCommit;render();}};
+document.getElementById('newBtn').onclick=()=>{document.getElementById('gameRoot').style.display='none';document.getElementById('setup').style.display='flex';};
+buildSetup();
+</script>
+</body>
+</html>
